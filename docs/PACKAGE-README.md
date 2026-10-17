@@ -28,7 +28,7 @@ CLI拒绝覆盖已有输出；GUI替换报告前确认。采集与VMX读取不�
 
 最新5de验证包在Win10教育版18363 x64普通权限通过14/14采集，以及中英界面、实际报告对比/导出、脱敏和包内.NET加载等十六项检查。标准目录/PATH/登记未发现系统dotnet；该环境已有VC++及其他软件，不是全新OS。Windows11客户机、其他VMware构建/拓扑/数值不外推。
 
-远程CI与私密安全报告渠道以实际仓库启用状态为准。本说明不表示已发布GitHub Release，也不把旧包的实测结果自动赋予未来包。源码中的RELEASE-READINESS.md记录当前门槛，SECURITY.md说明报告方式；不要将敏感材料发到公开Issue，noreply提交邮箱不能接收报告。
+远程CI及私密安全报告渠道已经实际验证，维护者Daniel Waltz；安全问题通过[GitHub私密报告入口](https://github.com/Aleka579/VMIL/security/advisories/new)提交。本说明不表示已发布GitHub Release，也不把5de本地包的客户机实测结果自动赋予CI产物或未来包。源码中的RELEASE-READINESS.md记录门槛，SECURITY.md说明报告方式；不要将敏感材料发到公开Issue，noreply提交邮箱不能接收报告。
 
 Hypervisor或Tools痕迹不能单独证明客户机身份；VMX声明与客户机观测分开显示。
 
@@ -42,4 +42,4 @@ This alpha provides Windows diagnostics, VMX inspection, report comparison, reda
 
 Keep the complete self-contained folder together. The App does not control VM power. Changes require a fresh preview, explicit confirmation, a powered-off VM and a request-scoped API connection. Restore preserves other contents; configuration backups are not full VM backups. Preserve unresolved-operation records and do not blindly retry. The App lease is not a global VMware lock.
 
-The latest 5de package passed ordinary-user CLI/GUI and report/runtime checks on Windows 10 Education build 18363, without a development SDK or system .NET. This was not a fresh OS. Consult BUILD-INFO.json for this package's identity and RELEASE-READINESS.md in the source for remote CI and release status. Original code is MIT; retain the included third-party licenses. There is no telemetry or automatic upload.
+The latest local 5de package passed ordinary-user CLI/GUI and report/runtime checks on Windows 10 Education build 18363, without a development SDK or system .NET. This was not a fresh OS; CI artifacts have their own identity and have not undergone guest acceptance. Consult BUILD-INFO.json for this package's identity and RELEASE-READINESS.md in the source for CI and release status. Report security issues through the [private reporting form](https://github.com/Aleka579/VMIL/security/advisories/new), maintained by Daniel Waltz. Original code is MIT; retain the included third-party licenses. There is no telemetry or automatic upload.

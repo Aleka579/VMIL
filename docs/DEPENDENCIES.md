@@ -98,14 +98,15 @@ CursorTouch/Windows-MCP、WinProbe、Node.js、uv和SSH未作为此次下载MCP�
 | actions/checkout | v7.0.1，3d3c42e5aac5ba805825da76410c181273ba90b1 | workflow固定 |
 | actions/setup-dotnet | v6.0.0，a98b56852c35b8e3190ac28c8c2271da59106c68 | 读取global.json |
 | actions/upload-artifact | v7.0.2，cf430e030ddbb5b0abf93d22962f4752f3646cd9 | workflow固定 |
-| Windows Runner | windows-2025，平台提供满足固定Action要求的runner/Node运行时 | 远程CI未执行，本机Node不是必装依赖 |
+| Windows Runner | windows-2025，平台提供满足固定Action要求的runner/Node运行时 | 2026-10-17实际Actions构建/127单元/100集成/publish通过，本机Node不是必装依赖 |
 
-2026-10-17已只读核对三个官方Release及Git远程标签，完整SHA与workflow一致；官方windows-2025清单仍在更新。依据为[当前workflow](../.github/workflows/ci.yml)、[官方Runner清单](https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md)和[本轮接入记录](GITHUB-READINESS-2026-10-17.md)。未执行远程CI，这些依赖不捆绑到客户机应用包。
+2026-10-17已只读核对三个官方Release及Git远程标签，完整SHA与workflow一致；官方windows-2025清单仍在更新，实际Actions已成功执行。依据为[当前workflow](../.github/workflows/ci.yml)、[官方Runner清单](https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md)和[本轮接入记录](GITHUB-READINESS-2026-10-17.md)。这些CI依赖不捆绑到客户机应用包。
 
 ## 本次验证边界
 
 - 已完成：既有工具环境/7读取方法及客户机临时接入；最新Release、127单元/100模拟集成、真实App有限配置与完整副本应用/恢复、最新包客户机十六项及清理，见[FULL17](V02-FULL-TEST-RESULTS-2026-10-17.md)。PowerShell7.6.6只做部署/版本验证，不把它计作App运行依赖。
-- 未执行：远程CI、私密安全渠道、公开发布、快照、其他MCP方法及全新OS；不保证其他版本/拓扑/数值兼容。
-- 下一步：按[具体接入方案](GITHUB-READINESS-2026-10-17.md)完成账号/仓库、远程CI及私密渠道；不重建已删除副本，系统安装和远程操作仍遵守授权规则。
+- GitHub已验证：公开源码导入、真实Actions构建/127单元/100模拟集成及CI产物，私密安全渠道开关/入口与维护者Daniel Waltz确认，见[结果](GITHUB-READINESS-2026-10-17.md)。
+- 未执行：GitHub Release、CI产物客户机、快照、其他MCP方法及全新OS；不保证其他版本/拓扑/数值兼容。
+- 下一步：后续代码/文档提交继续核实对应CI；正式发布按具体资产授权，不重建已删除副本，系统安装和真实VM仍遵守授权规则。
 - v0.1已有源码/本地预览包为0.1.0-alpha.2，来自干净提交ab177a7，BUILD-INFO.json记录SDK10.0.401与Runtime10.0.12；程序集与本机实际导出版本核对通过，ZIP附SHA256。此次不升级依赖，不代表完成新的在线维护期/漏洞核查。
 - 原alpha.1与2026-10-11完整验证ZIP保留原构建快照；后者已在声明目标测试。alpha.2没有重做真实客户机或全新OS测试，正式发布前仍需完成其余发布条件。

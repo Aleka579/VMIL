@@ -1,46 +1,58 @@
-# GitHub接入与剩余发布验收
+# GitHub开源与CI验收
 
-日期：2026-10-17，Asia/Taipei。状态：本地准备中，未创建仓库、推送或执行远程CI；REL-03/04保持未完成，总计35/37。
+日期：2026-10-17，Asia/Taipei。源码已公开，REL-03/04已有实际通过证据，总计37/37；尚未创建GitHub Release。后续提交由对应Actions继续验证，不把历史运行当作未来提交的结果。
 
-## 已确定与待补信息
+## 仓库、授权与安全渠道
 
-- 用户指定仓库名为`VMIL`；作者/版权人为Daniel Waltz。公开用户接口和已连接GitHub插件分别核实登录名`Aleka579`、用户ID260032387；拟用目标为`https://github.com/Aleka579/VMIL`。
-- 用户已完成GitHub连接。插件实际登录账号为Aleka579，已安装账号列表包含该账号；查询目标仓库返回404，可访问仓库列表为空。这只能说明当前连接无法访问目标，不能断言私有仓库一定不存在。本轮起点`5b7f60f`，当前本地分支`codex/v02-config-management-20261013`，没有remote。
-- 当前插件支持源码提交/分支及Actions结果读取，但未提供创建仓库、启用私密漏洞报告的操作。本机未发现GitHub CLI，Git Credential Manager账号查询为空。若仓库未创建，用户需在GitHub原生页面创建并授予连接访问；若已经存在，则核对准确URL与插件授权。不读取其他程序凭据或要求在聊天中提供令牌。
-- 本地Git历史包含内部WORK_LOG中的本机路径，公开前使用经过审阅的源码快照；原本地历史保留。公开快照将AGENTS中的本机事件记录改为通用停止规则，并以脱敏交接摘要代替内部WORK_LOG，其余源码、测试与公开文档保持原始内容。实际清单/哈希随快照保存，不直接把内部历史推到公开仓库。
-- 拟用渠道为GitHub Private Vulnerability Reporting，维护者和最终链接待用户确认；noreply提交邮箱不作报告邮箱。
+- 仓库：[Aleka579/VMIL](https://github.com/Aleka579/VMIL)，公开，默认分支main。插件实际登录Aleka579/用户ID260032387，目标仓库ID1423187964；导入前原生Git读取确认没有任何分支。
+- 用户明确确认公开仓库及私密报告已创建，授权上传已审阅源码、运行CI及必要修复，并由Daniel Waltz维护报告渠道。本次按方案导入空main，不覆盖其他仓库或已有用户内容。
+- 私密渠道：[Report a vulnerability](https://github.com/Aleka579/VMIL/security/advisories/new)。官方GET `/repos/Aleka579/VMIL/private-vulnerability-reporting`实际返回`enabled: true`，公开Advisories页面按钮和对应链接可见。
+- SECURITY.md和中英文使用说明记录实际入口与维护者。没有发送模拟漏洞、邮件或通知；noreply提交邮箱不作为报告邮箱。
 
-## 本地准备
+## 源码来源
 
-1. 工作流只需Windows托管Runner及.NET，不连接用户VM，不需要VMware、客户机凭据或本机报告。
-2. `main`及`codex/**`推送、pull request、手动触发可执行；权限为`contents: read`，checkout不持久化凭据。当前工作分支推送后可以直接取得CI结果，不必先合并。
-3. 固定现有官方稳定Action：checkout v7.0.1、setup-dotnet v6.0.0、upload-artifact v7.0.2。2026-10-17复核官方Release与windows-2025清单，无本轮依赖升级；此复核不是远程执行证据。
-4. 工作流依次Release构建、两个合成测试项目、自包含publish，保存TRX和包含许可/实际构建元数据的应用目录。CI目录是验证产物，不自动创建Release或变更VM配置。
-5. 安全政策、贡献指南、包说明、依赖说明及新版发布文案按已验收的有限API范围修正；旧9cfa28a Alpha及原发布草稿保留原来源。
+- 已审阅源码包：`VMIL-caa7f1f-source-review.zip`，149文件/333973字节，SHA256 `3896119f4921ce3e49d86f9367b70299f1d811bc6fd555193aefdd4ce2ec71a1`。本地来源提交`caa7f1fd40757d2789713fa8c376f69f8a23ecd3`；应用和测试与已验收`5de4ec4`基线无差异。
+- 仅公开AGENTS本机事件详情和WORK_LOG改为脱敏文本，停止规则保留；原本地记录和Git历史保持不变。其他内容与来源提交逐字节一致，不包含真实VM、内部历史、凭据、报告、缓存或二进制产物。
+- 先以PUBLIC-SOURCE.json建立无父初始化提交`2a8a5c9`，再导入[完整源码0c471bfd](https://github.com/Aleka579/VMIL/commit/0c471bfdf85ed492921fa43a3d393a6cd5edb19c)。完整tree为`75ffe7cacf4628903aa93ac9e24e4f4eefd9fb4b`；官方递归tree回读149个blob，Git SHA全部等于审阅包预期值。
+- PUBLIC-SOURCE.json描述首次导入快照的148个内容文件及两份脱敏替换，不是后续提交的动态文件清单。后续修改由公开Git提交追踪；内部维护分支不直接推送到公开main。
 
-## 远程执行方案
+## 实际GitHub Actions
 
-目标为`Aleka579/VMIL`。公开内容快照完成后，给出实际文件和清单并请求一次明确授权。当前连接仅核实身份和访问状态，不构成公开、上传、设置变更或Release授权。
+[首次运行39024064418](https://github.com/Aleka579/VMIL/actions/runs/39024064418)，event=push，源码`0c471bfdf85ed492921fa43a3d393a6cd5edb19c`，2026-10-17 18:13:15–18:15:25 UTC+08:00，最终`completed / success`。Windows Server 2025托管Runner执行，不连接任何真实VM。
 
-- 若是新仓库，先准备经审阅源码快照的首次提交；若是已有仓库，先只读检查默认分支、已有文件和权限，再准备独立工作分支的差异，不覆盖原有历史。
-- 只上传审阅后的源码、合成测试、文档、工作流和许可证。真实VM、备份、私有证据、二进制缓存、内部工作日志历史及任何凭据不上传。快照与本地Git源提交/清单的对应关系保留，不把快照当原历史的改写。
-- 推送具体分支后记录远程提交、Actions运行URL和最终结论。失败先读日志、修正对应问题再复验；推送成功、静态语法检查或下载artifact均不等于CI通过。
-- 拟在明确同意的公开仓库启用Private Vulnerability Reporting；该功能不对私有仓库开放，不将私有仓库改为公开作为隐含操作。若用户选择保持私有，则需另行确认可收信的私密邮箱等渠道。
-- 原生页面入口：[创建VMIL](https://github.com/new?owner=Aleka579&name=VMIL)；新建时保持空仓库，不额外生成README或许可证。公开后，在仓库Settings → Security → Advanced Security → Private vulnerability reporting启用，并将VMIL加入GitHub连接的仓库访问范围；已存在仓库先核实，不删除重建。维护者拟为Daniel Waltz，仍需明确同意。
-- 启用后回读仓库设置并核实“Report a vulnerability”入口。只验证设置和入口，不发送模拟漏洞、邮件或通知其他人；若接入权限不包含仓库管理，由用户在原生GitHub设置中完成，不擅自扩大插件权限。
-- 确认维护者和实际私密链接后更新SECURITY.md/文档，再取得最终提交的成功CI；完成REL-03/04后才记37/37。创建GitHub Release仍单独授权，当前没有发布、打tag或上传二进制的指令。
+| 检查 | 实际结果 |
+| --- | --- |
+| 固定官方Action / .NET安装 | checkout v7.0.1、setup-dotnet v6.0.0、upload-artifact v7.0.2成功；完整SHA固定 |
+| Release构建 | 0警告、0错误 |
+| 单元测试 | 127/127，0失败、0未执行 |
+| 模拟集成/临时文件测试 | 100/100，0失败、0未执行 |
+| 自包含publish、许可/指南、BUILD-INFO | 全部步骤成功 |
+| TRX产物 | 35083字节，artifact ID12097702746；下载后SHA/CRC及两份实际XML计数核对通过 |
+| 应用CI产物 | GitHub报告65196230字节，artifact ID12097767604；成功上传，未将其当作客户机验收包 |
 
-## 完成证据
+TRX ZIP SHA256：`847cbc1c33fdd6639ebaa6766cdde676d0952acd2e10bbb478c7ee504e50881f`。GitHub公布的首轮应用产物ZIP SHA256：`2299f9f97acee5987a58aafbd55d1778a8bc7d767a1e370691a8b32dc939ace8`。不同CI运行的产物有自己的提交/时间/哈希，不能沿用此处数据。
 
-| 项目 | 必要证据 | 当前状态 |
-| --- | --- | --- |
-| 目标/权限 | 账号、仓库URL/可见性、授权范围 | 连接账号Aleka579已核实；VMIL查询404/访问列表为空，仓库可见性和具体远程授权未确认 |
-| REL-03 | 最终远程提交及对应成功Actions运行URL，实际TRX/产物 | 未执行 |
-| REL-04 | 维护者确认、可访问的私密报告入口/配置回读、正确安全政策 | 文案已准备，渠道未启用 |
-| 公开Release | 独立发布授权及具体资产/标签 | 未授权/未执行 |
+工作流使用`contents: read`、checkout不持久化凭据、单并行构建/测试，无VMware、客户机或私有报告依赖。它保留CI验证产物，不自动创建Release。最终文档同步后的运行也须核实，结果由对应[Actions记录](https://github.com/Aleka579/VMIL/actions)及维护日志追踪。
+
+## 验收与交付范围
+
+| 项目 | 结果与证据 |
+| --- | --- |
+| REL-03 | 通过；实际成功运行、job日志、两份下载TRX和CI产物元数据 |
+| REL-04 | 通过；MIT/Daniel Waltz、中英说明/第三方许可、安全政策、实际私密入口与维护者确认 |
+| 本地/真实VM验收 | 保留原5de验证包身份、127/100及客户机十六项证据，见[FULL17](V02-FULL-TEST-RESULTS-2026-10-17.md) |
+| GitHub Release / tag | 未授权、未创建；当前仍为0.2.0-alpha.1 |
+| CI产物的客户机运行 | 未执行；不能由本地5de包实测自动推定 |
+| 全新OS、Windows11客户机、其他VMware构建/拓扑/数值 | 未据此验证；保持原兼容性和有限写入范围 |
+
+公开源码、CI验证产物和正式Release分别记录。将来发布仍需确定具体版本/标签/资产及支持范围；不因37/37自动发布、改版本或启动真实VM。
+
+## 证据入口
+
+私有目录`local-data/release-prep-20261017/`保存`source-review-check.json`、`github-import-check.json`、`github-import-run-final.json`、`github-import-job.log`、`initial-ci-test-results.zip`及其`-check.json`。原始路径/日志不进入公开源码。公开可复核证据为上述提交、运行、合成TRX和报告入口。
 
 ## 官方依据
 
-- [私密漏洞报告配置](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository)：公开仓库管理员启用后才有私密入口，与SECURITY.md独立。
-- [仓库REST接口](https://docs.github.com/en/rest/repos/repos#enable-private-vulnerability-reporting-for-a-repository)：启用需要仓库管理写权限；可回读实际启用状态。
-- [checkout v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1)、[setup-dotnet v6.0.0](https://github.com/actions/setup-dotnet/releases/tag/v6.0.0)、[upload-artifact v7.0.2](https://github.com/actions/upload-artifact/releases/tag/v7.0.2)、[windows-2025清单](https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md)。
+- [私密漏洞报告配置](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository)：公开仓库管理员实际启用，独立于SECURITY.md。
+- [仓库REST接口](https://docs.github.com/en/rest/repos/repos#check-if-private-vulnerability-reporting-is-enabled-for-a-repository)：实际开关回读。
+- Action完整标签SHA与windows-2025维护依据见[依赖清单](DEPENDENCIES.md)；本轮没有升级依赖。

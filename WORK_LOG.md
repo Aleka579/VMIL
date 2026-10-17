@@ -8,11 +8,11 @@ VM Identity Lab是Windows/VMware Workstation虚拟化特征分析和有限配置
 
 ## 当前状态
 
-2026-10-17：本地验收35/37。应用基线5de4ec4通过Release构建、127单元/100模拟集成，及独立副本真实App应用、备份、历史重开、参数恢复与普通权限客户机检查。
+2026-10-17：本地、真实VM与GitHub验收合计37/37。应用基线5de4ec4通过Release构建、127单元/100模拟集成，及独立副本真实App应用、备份、历史重开、参数恢复与普通权限客户机检查。
 
 配置仅允许登记版本17.5.2.23775571、hardware19、每插槽2核，4096↔6144MiB及2↔4vCPU。其他范围拒绝。测试副本及临时进程已清理。Windows11客户机、全新OS、其他构建和参数范围未据此验证。
 
-远程Actions结果和正式私密安全报告渠道未完成，公开上传和GitHub Release尚未授权。以RELEASE-READINESS.md及docs/GITHUB-READINESS-2026-10-17.md的实际证据为准。
+源码已按用户授权公开至Aleka579/VMIL，首次完整导入0c471bfd的149个blob与批准包一致，Actions39024064418实际成功、云端127/100 TRX核实通过。GitHub私密漏洞报告实际enabled=true、按钮/链接可见，维护者Daniel Waltz已确认；GitHub Release/tag未授权或创建。以RELEASE-READINESS.md及docs/GITHUB-READINESS-2026-10-17.md的实际证据为准，后续提交核实对应Actions，CI产物客户机尚未执行。
 
 ## 关键文件与常用命令
 
@@ -31,3 +31,5 @@ VM Identity Lab是Windows/VMware Workstation虚拟化特征分析和有限配置
 ## 工作记录
 
 - 2026-10-17 UTC+08:00：从本地来源提交`caa7f1fd40757d2789713fa8c376f69f8a23ecd3`生成待审阅公开源码快照；完整对应关系和文件哈希记录于PUBLIC-SOURCE.json。此记录只证明快照来源，不能替代远程CI或公开发布结果。后续经授权的工作继续更新本文件。
+
+- 2026-10-17 18:23 UTC+08:00：用户授权源码上传、运行CI及维护者/私密渠道；已按审阅快照导入空main并验证149个Git blob，Actions实际成功，下载TRX SHA/CRC及127/100计数通过，REL-03/04完成。此次同步中英说明、安全政策与验收索引；应用/测试/工作流不变。内部历史不上传，公开日志保持脱敏；后续提交继续核实对应CI，不以本记录预写未来成功。

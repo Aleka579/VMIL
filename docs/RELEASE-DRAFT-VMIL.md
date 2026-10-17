@@ -1,6 +1,6 @@
 # VMIL发布文案草稿
 
-建议仓库名：`VMIL`；软件名：VM Identity Lab。当前开发版0.2.0-alpha.1，未创建公开仓库、tag或GitHub Release。本草稿面向最新有限API实现，旧9cfa28a只读包的[原草稿](RELEASE-DRAFT-0.2.0-alpha.1.md)保留原范围。
+源码仓库：[Aleka579/VMIL](https://github.com/Aleka579/VMIL)；软件名：VM Identity Lab。当前开发版0.2.0-alpha.1，源码已公开，尚未创建tag或GitHub Release。本草稿面向最新有限API实现，旧9cfa28a只读包的[原草稿](RELEASE-DRAFT-0.2.0-alpha.1.md)保留原范围。
 
 ## 拟发布说明
 
@@ -21,4 +21,4 @@ VM Identity Lab是Windows/VMware Workstation诊断与有限配置管理工具，
 
 现有本地5de产品验证ZIP为65,411,594字节、413文件，SHA256 `d6e3cbfeaef95cdebce963ed31dc633c85216cc7da23560f59cde170bc7d4b41`，与旧Alpha分开保存，不含开发驱动。未来CI资产须记录自己的实际来源、运行时和清单，不能直接沿用该ZIP的哈希或声称字节相同。
 
-本地验收为35/37；正式私密渠道及最终远程提交的Actions运行尚未完成。目标仓库、快照内容、维护者与私密入口须实际确认；公开/推送/Release仍按具体方案授权。不得把本草稿或本地源码快照视为已发布。
+验收为37/37：官方Actions在公开源码基线上完成构建、127单元/100集成、自包含发布及CI产物上传，私密报告开关和入口均实际核实，维护者Daniel Waltz。具体来源/运行与限制见[GitHub验收](GITHUB-READINESS-2026-10-17.md)。CI产物尚未进行客户机验收，不能继承5de本地ZIP的字节哈希或实测身份。源码上传已获授权并完成；GitHub Release、tag和面向发布的二进制资产仍须按具体内容授权，本草稿不是发布结果。

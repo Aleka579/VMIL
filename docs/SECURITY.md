@@ -1,6 +1,6 @@
 # 安全设计
 
-状态：v0.2有限官方API配置及真实App应用/备份/历史重开/恢复已验收，127单元/100模拟集成及最新客户机检查通过；精确范围见[配置政策](VMWARE-CONFIG-POLICY.md)。远程CI与私密安全渠道仍待完成，见[当前结果](V02-FULL-TEST-RESULTS-2026-10-17.md)，历史证据保留原范围。
+状态：v0.2有限官方API配置及真实App应用/备份/历史重开/恢复已验收，127单元/100模拟集成及最新客户机检查通过；精确范围见[配置政策](VMWARE-CONFIG-POLICY.md)。GitHub私密安全渠道已核实开关和入口、维护者Daniel Waltz已确认，远程CI实际通过，见[GitHub结果](GITHUB-READINESS-2026-10-17.md)与[真实环境结果](V02-FULL-TEST-RESULTS-2026-10-17.md)。历史证据保留原范围。
 
 ## 资产与输入
 

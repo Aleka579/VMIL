@@ -6,7 +6,7 @@ VMware Workstation 虚拟化特征分析、兼容性诊断与配置管理工具�
 
 ## 当前开发
 
-当前源码为 **0.2.0-alpha.1**：官方API配置管理及实际App应用、退出重开历史、参数恢复闭环已通过，配置验收6/6，总计35/37。2026-10-17 Release零警告/错误、127单元/100模拟集成，以及最新包客户机普通权限/双语/报告/包内运行时十六项检查通过。配置仅支持登记版本17.5.2.23775571、hardware19、每插槽2核及4096↔6144MiB、2↔4vCPU；状态/内容冲突和未决结果保全已验证，不宣称全局VMware锁。远程CI和私密安全渠道尚未完成，正式发布未就绪，见[全量测试与限制](docs/V02-FULL-TEST-RESULTS-2026-10-17.md)。
+当前源码为 **0.2.0-alpha.1**：官方API配置管理及实际App应用、退出重开历史、参数恢复闭环已通过，配置验收6/6，总计37/37。2026-10-17 Release零警告/错误、127单元/100模拟集成，以及最新包客户机普通权限/双语/报告/包内运行时十六项检查通过；[GitHub Actions](https://github.com/Aleka579/VMIL/actions/runs/39024064418)已在Windows托管环境实际通过，私密安全报告渠道已启用。配置仅支持登记版本17.5.2.23775571、hardware19、每插槽2核及4096↔6144MiB、2↔4vCPU；状态/内容冲突和未决结果保全已验证，不宣称全局VMware锁。源码已公开，尚未创建GitHub Release；范围见[全量测试与限制](docs/V02-FULL-TEST-RESULTS-2026-10-17.md)及[GitHub验收](docs/GITHUB-READINESS-2026-10-17.md)。
 
 既有Alpha快照为 `artifacts/releases/VMIdentityLab-0.2.0-alpha.1-win-x64.zip`，来源9cfa28a，保留其只读范围及[原包验收](docs/V02-ACCEPTANCE-RESULTS-2026-10-14.md)，不包含最新后端。已验收的5de4ec4新本地验证包另存`artifacts/test-packages/VMIdentityLab-5de4ec4-validation-20261017.zip`及校验文件；未创建公开Release，历史包不覆盖。
 
@@ -74,7 +74,7 @@ v0.1 完成只读检测、VMX 查看、宿主机/客户机报告对比、脱敏 
 
 客户机允许Windows 10/11 x64，VMware最低17.5.2，属于用户指定的测试兼容基线；官方支持与实测兼容分别记录。其他SDK、脚本工具、依赖和CI继续核查维护期，临期版本不作为新采用方案。
 
-宿主机OS版本不设门槛。SDK10.0.401、Runtime10.0.12、VMware17.5.2与项目内Python3.14.8/MCP SDK1.30.0保留；7个读取工具已接入。最新5de验证包客户机和无需SDK/系统.NET目标、精确有限配置范围均已验收；该客户机已有其他软件，非全新OS。旧包与各日期证据保留原范围，远程CI及私密安全渠道仍待完成。
+宿主机OS版本不设门槛。SDK10.0.401、Runtime10.0.12、VMware17.5.2与项目内Python3.14.8/MCP SDK1.30.0保留；7个读取工具已接入。最新5de验证包客户机和无需SDK/系统.NET目标、精确有限配置范围均已验收；该客户机已有其他软件，非全新OS。旧包与各日期证据保留原范围，云端CI与私密渠道已通过[GitHub验收](docs/GITHUB-READINESS-2026-10-17.md)。安全问题请使用[私密报告入口](https://github.com/Aleka579/VMIL/security/advisories/new)，维护者Daniel Waltz。
 
 ## 许可与开源准备
 
