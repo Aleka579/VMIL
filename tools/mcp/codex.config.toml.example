@@ -1,0 +1,18 @@
+# Replace PROJECT_ROOT and VMWARE_INSTALL with verified absolute local paths.
+# Save the resolved configuration as PROJECT_ROOT/.codex/config.toml.
+[mcp_servers.vm_identity_lab_vmware]
+command = 'PROJECT_ROOT/artifacts/tooling/mcp-venv/Scripts/python.exe'
+args = ['-I', '-X', 'utf8', '-m', 'vmware_mcp.server']
+cwd = 'PROJECT_ROOT'
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+enabled_tools = [
+  'vmrun_list', 'vmrun_tools_state', 'vmrun_guest_ip',
+  'vmrun_file_exists', 'vmrun_dir_exists', 'vmrun_ls', 'vmrun_ps'
+]
+
+[mcp_servers.vm_identity_lab_vmware.env]
+VMRUN_PATH = 'VMWARE_INSTALL/vmrun.exe'
+VMWARE_HOST = '127.0.0.1'
+VMWARE_PORT = '8697'

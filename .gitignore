@@ -1,0 +1,44 @@
+# Build outputs (projects will be created during implementation)
+**/bin/
+**/obj/
+artifacts/
+.vs/
+TestResults/
+*.user
+*.suo
+*_wpftmp.csproj
+
+# Private local evidence and reports
+local-data/
+private/
+*.log
+*.trx
+*.bak
+*.backup
+*.tmp
+
+# Real VMware and Windows VM data must not be committed
+*.vmx
+*.vmxf
+*.vmdk
+*.vdi
+*.vhd
+*.vhdx
+*.vmem
+*.vmss
+*.vmsn
+*.vmsd
+*.nvram
+*.lck
+*.iso
+*.ova
+*.ovf
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Machine-specific Codex MCP paths and local settings
+.codex/config.toml
+

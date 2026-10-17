@@ -1,0 +1,73 @@
+name: Windows build and synthetic tests
+
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  TESTINGPLATFORM_TELEMETRY_OPTOUT: "1"
+  DOTNET_GENERATE_ASPNET_CERTIFICATE: "false"
+
+jobs:
+  build:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+      - name: Build
+        run: dotnet build VMIdentityLab.sln -c Release -m:1 --disable-build-servers
+      - name: Synthetic unit tests
+        run: dotnet test --project tests/VMIdentityLab.UnitTests/VMIdentityLab.UnitTests.csproj -c Release --no-build --parallel none --report-xunit-trx --report-xunit-trx-filename unit.trx --results-directory artifacts/test-results
+      - name: Temporary-file and synthetic collector tests
+        run: dotnet test --project tests/VMIdentityLab.IntegrationTests/VMIdentityLab.IntegrationTests.csproj -c Release --no-build --parallel none --report-xunit-trx --report-xunit-trx-filename files.trx --results-directory artifacts/test-results
+      - name: Publish local artifact
+        run: dotnet publish src/VMIdentityLab.App/VMIdentityLab.App.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -p:DebugSymbols=false -m:1 --disable-build-servers -o artifacts/publish/win-x64
+      - name: Test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: synthetic-test-results
+          path: artifacts/test-results/*.trx
+          if-no-files-found: ignore
+      - name: Retain package licenses and user guide
+        run: |
+          Copy-Item -LiteralPath LICENSE,THIRD-PARTY-NOTICES.md -Destination artifacts/publish/win-x64
+          Copy-Item -LiteralPath docs/PACKAGE-README.md -Destination artifacts/publish/win-x64/README.md
+          New-Item -ItemType Directory -Path artifacts/publish/win-x64/third-party -Force | Out-Null
+          Copy-Item -Path licenses/* -Destination artifacts/publish/win-x64/third-party
+      - name: Record artifact version and source
+        run: |
+          $appVersion = (Get-Item -LiteralPath artifacts/publish/win-x64/VMIdentityLab.App.dll).VersionInfo.ProductVersion.Split('+')[0]
+          $runtime = Get-Content -LiteralPath artifacts/publish/win-x64/VMIdentityLab.App.runtimeconfig.json -Raw | ConvertFrom-Json
+          $buildInfo = [ordered]@{
+            application = 'VM Identity Lab'
+            version = $appVersion
+            sourceCommit = (git rev-parse HEAD)
+            configuration = 'Release'
+            runtimeIdentifier = 'win-x64'
+            selfContained = $true
+            sdkVersion = (dotnet --version)
+            includedFrameworks = $runtime.runtimeOptions.includedFrameworks
+            packagedAtUtc = [DateTimeOffset]::UtcNow.ToString('o')
+            distribution = 'ci-artifact'
+          }
+          $buildInfo | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath artifacts/publish/win-x64/BUILD-INFO.json -Encoding utf8NoBOM
+      - name: Alpha build
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: VMIdentityLab-win-x64-alpha
+          path: artifacts/publish/win-x64

@@ -1,0 +1,6 @@
+# Local VMware MCP uses the Python SDK v1 Server/stdio interface.
+mcp>=1.0.0,<2.0
+httpx>=0.27.0,<1.0
+
+# Build backend for the downloaded local package.
+hatchling
