@@ -1,0 +1,753 @@
+{
+  "application": "VM Identity Lab",
+  "distribution": "source-review-only",
+  "sourceCommit": "caa7f1fd40757d2789713fa8c376f69f8a23ecd3",
+  "applicationValidationBaseline": "5de4ec4927e5d2eaca7b92e841a4881bbd92ff98",
+  "historyIncluded": false,
+  "transformedFiles": [
+    "AGENTS.md",
+    "WORK_LOG.md"
+  ],
+  "files": [
+    {
+      "path": ".editorconfig",
+      "size": 184,
+      "sha256": "9d57b228f26489f51826b7dc9cac85755a3f2596ad7f6cb0f431c9265c551413"
+    },
+    {
+      "path": ".gitattributes",
+      "size": 188,
+      "sha256": "7354d5de6e39568137f48adb8d5b93fcd79f57506fe352bbcbcf96dbc4d07231"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "size": 3541,
+      "sha256": "49fd4355c8548277f6eba5c3fff97a3894daba4080f94212012d4f2ee985459f"
+    },
+    {
+      "path": ".gitignore",
+      "size": 509,
+      "sha256": "6a3819bb51d3c8d4795df7755720bb9e9804e9b02d5c42994aa6ca73d4a14441"
+    },
+    {
+      "path": "AGENTS.md",
+      "size": 9095,
+      "sha256": "e7a234803034c1d87dcd4741cdb93e2b7b7c01c94d7fa7db747a407ad574e145"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "size": 4005,
+      "sha256": "1d1b035f760dce91f98206fc90bb6ffc27dfc707b89267a5c699f26c2674e71a"
+    },
+    {
+      "path": "CODEX_START.md",
+      "size": 4291,
+      "sha256": "16ad69e34d0cafb558ce1a39c5c5805f271c1d9a75934fcd52174ba7b37c93ae"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "size": 1956,
+      "sha256": "4fcb2a62739539fa5638e17b9060ced6d0a64ebb0b7dc11c5d18e4407de5fa80"
+    },
+    {
+      "path": "Directory.Build.props",
+      "size": 344,
+      "sha256": "1bbd4f4e566d8ed7b5b12aeefdd017ca1971fdf35c714ed5455ba5380aaf433e"
+    },
+    {
+      "path": "LICENSE",
+      "size": 1069,
+      "sha256": "ab2bbb7001f438d527ff3f0031d5820855c91a15f9c63811b374e2f77a0fab24"
+    },
+    {
+      "path": "PLAN.md",
+      "size": 12545,
+      "sha256": "1f1e848775f07b6082fba56e3ca6a15512ca5bf50ade21f08887da6492eda914"
+    },
+    {
+      "path": "README.en.md",
+      "size": 6309,
+      "sha256": "8cb3e1486f745d542ce47f242f3bf13cd3d0ce08d67dd2a1ba1a04f488e7972f"
+    },
+    {
+      "path": "README.md",
+      "size": 6653,
+      "sha256": "8e655a9d1eaa505dbea5412b5493887f0cf716979405b00231803721290f1f7d"
+    },
+    {
+      "path": "RELEASE-READINESS.md",
+      "size": 12748,
+      "sha256": "0f95e8123da0bc1581a1f8862d2bb14826aa368da264b63d580da8559910a682"
+    },
+    {
+      "path": "SECURITY.md",
+      "size": 2911,
+      "sha256": "46608017886a1b28f8cab9077a057ca0d63966f3308b97018dac6644aaebbbb2"
+    },
+    {
+      "path": "THIRD-PARTY-NOTICES.md",
+      "size": 2675,
+      "sha256": "b77bcf4d851b2ae2719268c605ba185685d4e32036c816a852ee17b2103b581c"
+    },
+    {
+      "path": "VMIdentityLab.sln",
+      "size": 8368,
+      "sha256": "c5b71d4173f70ab0d6c52a00bd1a887edcddfc661efa1548608afd4a367f7d49"
+    },
+    {
+      "path": "WORK_LOG.md",
+      "size": 2475,
+      "sha256": "458866c5321a27d08bd77e88527419eb862187e26600419ada3e98be3538e08d"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "size": 4898,
+      "sha256": "6e038f55d5688599131fe9b9f9f65cc2d161799d5570589b15c1a3561393da26"
+    },
+    {
+      "path": "docs/COMPATIBILITY.md",
+      "size": 9316,
+      "sha256": "d6ef408a7bffc73ae505182c3e780936339c4168dbc9aff44be859b2ac73bf91"
+    },
+    {
+      "path": "docs/CONFIGURATION-WRITE-DESIGN.md",
+      "size": 6762,
+      "sha256": "a0789aec0e7a651cf9d45a3166274a5f947eba442d9b312f5e8e75baca343679"
+    },
+    {
+      "path": "docs/DEPENDENCIES.md",
+      "size": 11200,
+      "sha256": "d27004f70746132b958b6e5744c7fe02254cbaf4b7d71a9a0059e5ca1ca135d7"
+    },
+    {
+      "path": "docs/ENVIRONMENT-SETUP.md",
+      "size": 5987,
+      "sha256": "12b560b715a8e7afeb54fe561da4aafdf73538be4899badf3bda6a09d1a10bac"
+    },
+    {
+      "path": "docs/GITHUB-READINESS-2026-10-17.md",
+      "size": 6128,
+      "sha256": "ad9dfd793c5ee2f70e3bceb5bf6b60db59c488a9de3ba7f3a715e8bb30f7a293"
+    },
+    {
+      "path": "docs/GUEST-TEST-RESULTS-2026-10-11.md",
+      "size": 7323,
+      "sha256": "02b508df47534895ee9d8da0fa4eee207d886740fee7f89b222ec4126ab5c11f"
+    },
+    {
+      "path": "docs/HOST-TEST-RESULTS-2026-10-11.md",
+      "size": 6551,
+      "sha256": "5adac5a8aa6a891dfa6f7f0c9c7189a2e8935ffaa57c173ce293ca64d041f256"
+    },
+    {
+      "path": "docs/LICENSE-DECISION.md",
+      "size": 885,
+      "sha256": "5e93dc21a394d497e716be5f002e71c3afca9f6c35ad130ba4fb4140a416594b"
+    },
+    {
+      "path": "docs/MODULES.md",
+      "size": 5298,
+      "sha256": "efb2910d642a1f875e0f4c77a34be0573f789e103a588edb5d35bd633fd20c48"
+    },
+    {
+      "path": "docs/PACKAGE-OPTIMIZATION-BACKLOG.md",
+      "size": 2340,
+      "sha256": "7c809405627f6e12a649c3cd5bc23dc653bc64df9630fb7ced27ec61517687a5"
+    },
+    {
+      "path": "docs/PACKAGE-README.md",
+      "size": 4342,
+      "sha256": "b93050785fdccf2264c86acf72fead11533d395ec0ea56cd2ec3b027ec38a800"
+    },
+    {
+      "path": "docs/PACKAGE-SIZE-ANALYSIS.md",
+      "size": 7534,
+      "sha256": "0477be3df7c5b36ffb5e31b2052307a367318e28d39d71a678167c9d9ccb2dce"
+    },
+    {
+      "path": "docs/READINESS-TEST-RESULTS-2026-10-11.md",
+      "size": 7563,
+      "sha256": "8afe856528fe53ec778c99d7e60ebfbff9b1e06f637dd0ba4904e849e826a0ca"
+    },
+    {
+      "path": "docs/RELEASE-DRAFT-0.2.0-alpha.1.md",
+      "size": 1371,
+      "sha256": "f9110d396281cacd605c81ccf971e6e2d33cd77170ecba3ef770b6243eabdb08"
+    },
+    {
+      "path": "docs/RELEASE-DRAFT-VMIL.md",
+      "size": 2517,
+      "sha256": "3f37feea9e8a3ea7a50e9ab385af1233dc099b1ef29ab0feeab7cb3730301d50"
+    },
+    {
+      "path": "docs/REPORT-SCHEMA.md",
+      "size": 4236,
+      "sha256": "97762ae422c0d7d20f585d1073aafff962e490125f8c799bbcf8bba516649618"
+    },
+    {
+      "path": "docs/REQUIREMENTS.md",
+      "size": 8943,
+      "sha256": "3e3e697466165ae1aa111c4b85cb62d0783df10a794e6669c940c9fc246cb02c"
+    },
+    {
+      "path": "docs/SECURITY.md",
+      "size": 3561,
+      "sha256": "4e67cc62164eb89f8278bd0bd8e053840bbc6f91e8f8563003e10aaa1017f540"
+    },
+    {
+      "path": "docs/TEST-PLAN.md",
+      "size": 11613,
+      "sha256": "558ca70efb0f736f95a4269c59b7a4d9fdc4d166bfc1b41d42d344ed7c8f5ad1"
+    },
+    {
+      "path": "docs/USER-GUIDE.md",
+      "size": 6521,
+      "sha256": "be27dd202cf0ce2bd22313e5c8f2fae03ff18327b9aef4ea053f4206500a5eca"
+    },
+    {
+      "path": "docs/V02-ACCEPTANCE-RESULTS-2026-10-14.md",
+      "size": 6041,
+      "sha256": "9db8637cb6f5a027c989e947dfbdea925ef832984ea358e5378670d50cc36019"
+    },
+    {
+      "path": "docs/V02-API-BACKEND-2026-10-16.md",
+      "size": 6982,
+      "sha256": "b6280fb830be0c3c39ae3ea09c3ed7e25724b08f3049268acf041059ff5e5323"
+    },
+    {
+      "path": "docs/V02-CONFIG-ACCEPTANCE-2026-10-16.md",
+      "size": 7380,
+      "sha256": "4fdf51d31c80ccfdfe1a1880992e0d355108e8ab7fc5776da81e67c84ef271bd"
+    },
+    {
+      "path": "docs/V02-DEVELOPMENT.md",
+      "size": 7014,
+      "sha256": "5903e62559b4dc4b5e0ec12dc91037def3d9dffb2dcd96b59af7cea87560922c"
+    },
+    {
+      "path": "docs/V02-FULL-TEST-RESULTS-2026-10-17.md",
+      "size": 12178,
+      "sha256": "1223feda9a0426c55373b239720a3bfde048e4f23f348e67b8d9da4433ca2a07"
+    },
+    {
+      "path": "docs/V02-LOCAL-PREPARATION-2026-10-14.md",
+      "size": 3639,
+      "sha256": "b60b02fb44afe068375661bba73391fa887359ea26092a7a382e560796436d4a"
+    },
+    {
+      "path": "docs/V02-REAL-CONFIG-ACCEPTANCE.md",
+      "size": 4195,
+      "sha256": "33555ca29cb68642fa6202c860e3483c150b30ce6c0b33c9d029132365932b0a"
+    },
+    {
+      "path": "docs/V02-TEST-RESULTS-2026-10-13.md",
+      "size": 5435,
+      "sha256": "62e033ce490b1f77b6b91c2dd87486d13efcd8b45d7dc170f9a7e1ccf02c2852"
+    },
+    {
+      "path": "docs/VMWARE-17.5.2-EVIDENCE.md",
+      "size": 4009,
+      "sha256": "24139b38ef5cba8e0af8ffa5580425383dd4294a17467398030701df1fbeaa15"
+    },
+    {
+      "path": "docs/VMWARE-CONFIG-POLICY.md",
+      "size": 7632,
+      "sha256": "0460963a706f8ed2aa40aeac1ea0e81d12395b5fc38a8a1707d29bb2145a8f82"
+    },
+    {
+      "path": "docs/WORKTREE-HANDOFF.md",
+      "size": 5273,
+      "sha256": "6b6b59d2cc43089876013e25d177323d99782340aa49004b41e206053123ad87"
+    },
+    {
+      "path": "docs/package-size-inventory.csv",
+      "size": 26692,
+      "sha256": "69ec53d05946e6be07cea050c01764020869677135f36105436c5fb2de493add"
+    },
+    {
+      "path": "global.json",
+      "size": 169,
+      "sha256": "f8ecaa8e7896cc5eb32422d63d3765f08d0f560218bdbbfb114d9fcd0d0b0d53"
+    },
+    {
+      "path": "licenses/NETCore-LICENSE.txt",
+      "size": 1116,
+      "sha256": "cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310"
+    },
+    {
+      "path": "licenses/NETCore-THIRD-PARTY-NOTICES.txt",
+      "size": 76623,
+      "sha256": "66f1d4e44973185519bb4aa8a9718eb22fc7af2cc532e3ae9cfc4c127ee7fc54"
+    },
+    {
+      "path": "licenses/System.CodeDom.nuspec",
+      "size": 1207,
+      "sha256": "158c8cbfaef8e99ff19f134c113e5ba680513d0f3bfff5c41e716bcd46dadfa1"
+    },
+    {
+      "path": "licenses/System.Management.nuspec",
+      "size": 1883,
+      "sha256": "f36af2c08f70a83ca2d2fcf5e23e916c1d16d364ef70a3ff63f10f1caae79ecb"
+    },
+    {
+      "path": "licenses/WindowsDesktop-LICENSE.txt",
+      "size": 1115,
+      "sha256": "ae48df11a335dc1a615f4f938b69cba73bcf4485c4f97af49b38efb0f216353b"
+    },
+    {
+      "path": "src/VMIdentityLab.App/App.xaml",
+      "size": 622,
+      "sha256": "12160823380eeeba5aefa78076e529d4b9778ad1abc49ec56c3fbcf337d2e6c8"
+    },
+    {
+      "path": "src/VMIdentityLab.App/App.xaml.cs",
+      "size": 4329,
+      "sha256": "de2a3d3f76a5253e5d774aea67838e9869de17ee2ab5f6c53c55fc77d87fbc3b"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Infrastructure/Commands.cs",
+      "size": 961,
+      "sha256": "8428f6df29c49f99cdc5e1ba9a6d7fcc9103c98a1aa557a2d7c91ce74185f00a"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Infrastructure/ConfigConfirmationDialog.cs",
+      "size": 2879,
+      "sha256": "801fbcced809473dafc1ec8b86526c64e317e9f51dd74e7d57a77c903a384cc0"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Infrastructure/DiagnosticLog.cs",
+      "size": 380,
+      "sha256": "fc89290842a0b6426971bd77456c696d877e6e84ad537cdff77a91f0aa03c368"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Infrastructure/Localization.cs",
+      "size": 713,
+      "sha256": "56e09c14a99f416ac3e1c455f69e1be02f215b94ffae39e6b461e7b7124dbf50"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Infrastructure/PageVisibilityConverter.cs",
+      "size": 572,
+      "sha256": "39a3881b126d9ea8085e306714669429ac7ed87993d387036f160565a9280304"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Infrastructure/PreviewRenderer.cs",
+      "size": 1657,
+      "sha256": "2fe65230bc40a010cac83d7138fffc3c9f5c36d48742ed8d074ab4e283fbab0d"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Infrastructure/VmwareConnectionDialog.cs",
+      "size": 3202,
+      "sha256": "ad26962efb27e263bc95cefe2a7970bfd97605e58b7f2f207a386f8a0272c657"
+    },
+    {
+      "path": "src/VMIdentityLab.App/MainWindow.xaml",
+      "size": 19550,
+      "sha256": "d4d712559a5b5b920c0aae9e6fdf3fbd865f8456f523944849acaf2efa1df7f7"
+    },
+    {
+      "path": "src/VMIdentityLab.App/MainWindow.xaml.cs",
+      "size": 1339,
+      "sha256": "39aba75ead9b0f92146315330798b3fbb237c45b4f5e4b14f7d9a54031826244"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Resources/Strings.en-US.xaml",
+      "size": 14496,
+      "sha256": "b626aa3da10126668cedc165639dd9be0d227ec3774795a76d9f6bee8f3be895"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Resources/Strings.zh-CN.xaml",
+      "size": 13928,
+      "sha256": "80c6441b6d57e7e72cd0249d895291bfee340bf5e582f92cdcb17c26aade0da0"
+    },
+    {
+      "path": "src/VMIdentityLab.App/Resources/Theme.xaml",
+      "size": 5224,
+      "sha256": "7f080413b4e56bf9bfcdff66937a6c9e9203c2524af4c80c0528b26a861f2492"
+    },
+    {
+      "path": "src/VMIdentityLab.App/VMIdentityLab.App.csproj",
+      "size": 547,
+      "sha256": "9c12729a5e1b51c22456d1a3191511c81e80f3907653597a8c65f161dedb8d9a"
+    },
+    {
+      "path": "src/VMIdentityLab.App/ViewModels/MainViewModel.cs",
+      "size": 29203,
+      "sha256": "99b87e7026022e75c68bc29ea3502e2d50a3e9ae5c7f0df756a60961eb4676df"
+    },
+    {
+      "path": "src/VMIdentityLab.App/app.manifest",
+      "size": 611,
+      "sha256": "0e3f841298c2f8935a16e88d135c54abd27a43d28cb29e673a52f2efc4156ea4"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/BuildInfo.cs",
+      "size": 281,
+      "sha256": "721edc4c0c3a73ae4f459f7691fd5e5121cca6c5eae092ca5f1feec52471c92e"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/Comparison/ReportComparer.cs",
+      "size": 4039,
+      "sha256": "817bbb3ed48ff4fc98d2abd6d2e933a869193a8035ff8ffa96707f4c00c581bf"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/Evidence/EvidenceEvaluator.cs",
+      "size": 1969,
+      "sha256": "003c2475005c896c6e653320da1fca08e116ac5f7c15e5b1d7c6ace4309df6df"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/Reports/DiagnosticReport.cs",
+      "size": 4083,
+      "sha256": "3e101b0fbdcd61222535af5a80f04fea4b6633db373d671a9e4407a3f0be34b9"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/Reports/FindingCatalog.cs",
+      "size": 2705,
+      "sha256": "018e4df34187bafd686a0e48a109a089a057d5ff5f3766225ec2bfa5800dc2b8"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/Reports/HtmlReportRenderer.cs",
+      "size": 2573,
+      "sha256": "3ae1430ac43831ac5f5cf556797e6a9164da63adab8d3364e11a78c068098bca"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/Reports/ReportFiles.cs",
+      "size": 1995,
+      "sha256": "9abe3dbaaeadcc3b0028f724d1a737f0a27003e70fa78ebef46b5b938c49be29"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/Reports/ReportJson.cs",
+      "size": 4783,
+      "sha256": "daab1bc686f5ecc8c36a3b3eb2beb920f618a28ddefd7c4ed698ca825583ec41"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/Reports/ReportPrivacy.cs",
+      "size": 4610,
+      "sha256": "5ca9e2cbade98ceaea580ebc11b7dafe4dd241a7c298d8f6bc88cd7856136f3f"
+    },
+    {
+      "path": "src/VMIdentityLab.Core/VMIdentityLab.Core.csproj",
+      "size": 129,
+      "sha256": "e2c08643e21eba9123e4b319840fec508efc44b473a7cab491d6188e5f6905ca"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/Configuration/VmxApiConfigManager.cs",
+      "size": 11526,
+      "sha256": "69f2e0900290750a975f71d2d560b5da60876a4dd429527a93db4c7c218002d3"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/Configuration/VmxApiOperation.cs",
+      "size": 7875,
+      "sha256": "acedb737dadeba79a8fd53fca01455aa3a6a37189e978a622ade27607d91c066"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/Configuration/VmxBackupHistory.cs",
+      "size": 7854,
+      "sha256": "43addbb520358a4b8fcb36910051e466a667bc4985778c86122cbb018af2e22e"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/Configuration/VmxConfigManager.cs",
+      "size": 11065,
+      "sha256": "2164b7ba424ef82f76d937e0d17ec653297c795e7d6cbdb5d9caadb15e54fef8"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/Configuration/VmxConfigPlan.cs",
+      "size": 3858,
+      "sha256": "4056fb4a11a25de135dade94c47e4aecda3c58c48b5986fbcfa313a06e671a45"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/Configuration/VmxWritePolicy.cs",
+      "size": 1156,
+      "sha256": "9bdeac9fe0e0b8bf1c43998e80e8a3a617dd7f106c948b8cead24d383c61c922"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/PowerStateEvidence.cs",
+      "size": 2230,
+      "sha256": "53bd4b0b764569a794445d27e1a158eb739cc9953171c1ac5c1ccb0f57072ee2"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/VMIdentityLab.VMware.csproj",
+      "size": 241,
+      "sha256": "df4778cc04f5239b386143da45ea9f7fdfcd4be2fe703daa8703ca27b59d107a"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/VmxDocument.cs",
+      "size": 8314,
+      "sha256": "75d51dbef295dc0b12a0a14e618b69de1f950951a6eadf3aec3144a289a4e68d"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/VmxReader.cs",
+      "size": 1478,
+      "sha256": "fe72aa01f3e5a702f3222a1af8f922b7c85cac0e4f93d2be0043648e2b5cbd77"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/VmxSupportCatalog.cs",
+      "size": 1510,
+      "sha256": "c5ed7559dc5ddd1a3d83514caa6608d7b0fbb626de1cbbb60c02e16aaa2fce02"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/WorkstationRestClient.cs",
+      "size": 7676,
+      "sha256": "10b4dd302f2ea2c29c525774dd7fb79964fc3a2a34c20a357edec65139d75374"
+    },
+    {
+      "path": "src/VMIdentityLab.VMware/WorkstationRestPowerStateProbe.cs",
+      "size": 1113,
+      "sha256": "37ae4652eb9cc744a540cd3ed757611546873b35eaa5dfeb07f51e6e318620ac"
+    },
+    {
+      "path": "src/VMIdentityLab.Windows/NativeWindowsDataSource.cs",
+      "size": 8966,
+      "sha256": "e291dde8edffd6f16f03087d303d03d32c109d1f808758e2ff49e3300c7c1dfd"
+    },
+    {
+      "path": "src/VMIdentityLab.Windows/VMIdentityLab.Windows.csproj",
+      "size": 320,
+      "sha256": "a278e8e9080e5c9aba67ee039d1cacc9d721aaeba4ed23ed943e4848ef1fc01c"
+    },
+    {
+      "path": "src/VMIdentityLab.Windows/WindowsCollector.cs",
+      "size": 4591,
+      "sha256": "0a23fcb94672e0a405db566ebcc71dca52f2f0813a294b8a7096f4ea46a724ab"
+    },
+    {
+      "path": "src/VMIdentityLab.Windows/WorkstationEnvironment.cs",
+      "size": 994,
+      "sha256": "cde8a0db583f9624a855837200a214097ab817a15c7ec2d7091dbaf9969c646f"
+    },
+    {
+      "path": "tasks/00-environment.md",
+      "size": 4330,
+      "sha256": "ab8f819308ba4f9be37316dc8bfca13c1bccbe86b6103af1df00e1694b2b8b26"
+    },
+    {
+      "path": "tasks/01-detection.md",
+      "size": 4167,
+      "sha256": "5df7763b5f851b38f4a8feb426188714e35eef72656df886162ac8aa65e016e0"
+    },
+    {
+      "path": "tasks/02-vmware-reader.md",
+      "size": 4576,
+      "sha256": "559a37f0d563beb412fe974900b10ab8df9d76acebbc248a5562aae6f3f1c34c"
+    },
+    {
+      "path": "tasks/03-readonly-app.md",
+      "size": 4142,
+      "sha256": "6437b479ea0960a1d4a06846b790fa6643edd7ceef8b6e1224e4932825c84cba"
+    },
+    {
+      "path": "tasks/04-v01-validation.md",
+      "size": 5167,
+      "sha256": "310a4bf93378ac041bb43465be449f0babcb12a186317316341df9029b3b9444"
+    },
+    {
+      "path": "tasks/05-config-manager.md",
+      "size": 6921,
+      "sha256": "5c5ea31a40a7fd7ffbe2eda6f06692fbddf572fe0d57ed32ab868792e35ee449"
+    },
+    {
+      "path": "tasks/06-release.md",
+      "size": 6607,
+      "sha256": "048b837de5a5b6c34a3c8d4e3f7d40e157694576ff737cfdb76e6338e11b112b"
+    },
+    {
+      "path": "tasks/PROGRESS.md",
+      "size": 12978,
+      "sha256": "11b86a420d5645b7d69b29790d44c92a6519b969f6c1d565dcec5e044f2d29ba"
+    },
+    {
+      "path": "tasks/modules/M00-foundation.md",
+      "size": 2073,
+      "sha256": "347f04c9754263786e90cb10b1bea18cfc7844af541cc3f15e9187606e587a04"
+    },
+    {
+      "path": "tasks/modules/M01-reports.md",
+      "size": 2023,
+      "sha256": "0ee2d5a7768b0484f1635450158cfe033ada0c1edf05841ea0a197e632b1d5a9"
+    },
+    {
+      "path": "tasks/modules/M02-vmx.md",
+      "size": 2135,
+      "sha256": "190db6636720e339cb459f347111b0cc91a825de40bc6f8e9930059355d01df0"
+    },
+    {
+      "path": "tasks/modules/M03-comparison.md",
+      "size": 1734,
+      "sha256": "5c68d6e4c153fce9401b87106e3550d2db525250137b4224709e2e870d2bf454"
+    },
+    {
+      "path": "tasks/modules/M04-detection.md",
+      "size": 2012,
+      "sha256": "a3a8665635cfee92be9ecf10f4cd996d8cfe3416e24426084486b9ac7ed20f02"
+    },
+    {
+      "path": "tasks/modules/M05-app.md",
+      "size": 2467,
+      "sha256": "6d9a86f40940162e19b8c210f097ab4f3507732fafcd6871613e291e9f5256ca"
+    },
+    {
+      "path": "tasks/modules/M06-delivery.md",
+      "size": 2536,
+      "sha256": "39c9acd47ee071a1a03d2556f1ca9ceb3e23f4dfa9f5b445f7c79fa37b80f8bc"
+    },
+    {
+      "path": "tasks/modules/M07-config.md",
+      "size": 3826,
+      "sha256": "55a772ffa9d2f72eda5a902a26bb00ff41f591a02fd539d8773f41dc447dbf25"
+    },
+    {
+      "path": "tests/VMIdentityLab.IntegrationTests/ApiConfigurationTests.cs",
+      "size": 31667,
+      "sha256": "f80a83ebd6c110fa2ce6ce5820c601107106d0156fe2b991b445f0ccbf80eac6"
+    },
+    {
+      "path": "tests/VMIdentityLab.IntegrationTests/BackupHistoryTests.cs",
+      "size": 10153,
+      "sha256": "f88c90e8f8384d53f1122c97dbad3fd9fec48bd26f10b41e85a8fe54ca659731"
+    },
+    {
+      "path": "tests/VMIdentityLab.IntegrationTests/CollectorPipelineTests.cs",
+      "size": 3291,
+      "sha256": "d2160abbe5828bbc39b198bfda2da5aea445f30427da7561b777b91bb11f6379"
+    },
+    {
+      "path": "tests/VMIdentityLab.IntegrationTests/ConfigTransactionTests.cs",
+      "size": 17239,
+      "sha256": "6171ec5dc3326cf6c546993c7bfbf08833dc2c4e32bf9c36164eb3a76d5604ce"
+    },
+    {
+      "path": "tests/VMIdentityLab.IntegrationTests/ReadOnlyFileTests.cs",
+      "size": 3733,
+      "sha256": "31fa1931153b28e61e68e2749103710ac877284753f94ae53a32b7947d8cfb1b"
+    },
+    {
+      "path": "tests/VMIdentityLab.IntegrationTests/VMIdentityLab.IntegrationTests.csproj",
+      "size": 727,
+      "sha256": "81d55562ec3c56eee84949578448642a07b22afd3b0a51f7832bd1c655c6f823"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/ComparisonTests.cs",
+      "size": 3947,
+      "sha256": "2f72eb0e5ae47061de0cb4c299bc4d49f02b46e7e44f8a8a07ff4f817029d8df"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/ConfigPlanTests.cs",
+      "size": 5099,
+      "sha256": "4b916efdfd772ec0a7b2cb12cfaf565659d48aacff4b581fde4d6f09adfd70a9"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/EvidenceTests.cs",
+      "size": 3443,
+      "sha256": "b70f9c6ab3b294b93d2c674a8f469f3154d3008b6669b5c7aded7d2d9a753928"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/ReportSamples.cs",
+      "size": 810,
+      "sha256": "a61b1e56b638bf5c6cbb352932b12eef0ce1349299b782f3ad30b8a619772a7c"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/ReportTests.cs",
+      "size": 4828,
+      "sha256": "3b386262736db611011b6e6011114e5185c381ddaf1dc1c021446b74cb70b741"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/RestClientTests.cs",
+      "size": 8099,
+      "sha256": "8394f263ab76088c656417addae41b7df19420cf3d7755db73db747374a5d3e8"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/RestPowerStateTests.cs",
+      "size": 5736,
+      "sha256": "c6ecd9c30e4b2289e9961fb06208bc6f83f6e9b56a9034eeaf02e84c92463eb4"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/VMIdentityLab.UnitTests.csproj",
+      "size": 623,
+      "sha256": "3cb72dda1f935774497c2b954783ed30330381dc350dc581b7b554e4aeee8451"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/VmxSupportTests.cs",
+      "size": 2069,
+      "sha256": "4d8f3f2433a48265af47af1d9e0c74033daebf25ea0b5bf2f7f02a5d726ca9e1"
+    },
+    {
+      "path": "tests/VMIdentityLab.UnitTests/VmxTests.cs",
+      "size": 5522,
+      "sha256": "0836bb75b75bc39e0f05f5b63c994a2a583d49ab17fc96c7285dcc39e81a2f6c"
+    },
+    {
+      "path": "tools/desktop/README.md",
+      "size": 3764,
+      "sha256": "04c902f0e7b726f98f3833f6978fa569468a1801d98c1a687fc6182f7e891f08"
+    },
+    {
+      "path": "tools/desktop/VMIdentityLab.DesktopTest/Program.cs",
+      "size": 14684,
+      "sha256": "14e15f9403e1399ccb8b9dbcddf2a0ebf412157c17453a68c6a64f50958316af"
+    },
+    {
+      "path": "tools/desktop/VMIdentityLab.DesktopTest/VMIdentityLab.DesktopTest.csproj",
+      "size": 272,
+      "sha256": "86c278ecd6eb10dd68a93c331bfc935a76425a18050915ecfad3c6d237fcddc6"
+    },
+    {
+      "path": "tools/mcp/GUEST-TESTING.md",
+      "size": 3720,
+      "sha256": "3bcdd1ce164ff02f7dd7fa2924ccf8cea2b5f923ff2cbf89fefd214b9ba5f722"
+    },
+    {
+      "path": "tools/mcp/check_connection.py",
+      "size": 1575,
+      "sha256": "071f3afa24a31e2b725384e21bb7c7094b56a2050b6243891cf156475f326d00"
+    },
+    {
+      "path": "tools/mcp/codex.config.toml.example",
+      "size": 664,
+      "sha256": "bfbabbe0e7ed9c8a124fe8a594aa818cf2e93ea9f67a6bbc4c04b0c42962e7d2"
+    },
+    {
+      "path": "tools/mcp/guest_session.py",
+      "size": 6159,
+      "sha256": "664154f4151558d8d8b8da14e4eeed54da3c46a690a3c8b7138f5b00ea45211a"
+    },
+    {
+      "path": "tools/mcp/prepare_guest_package.py",
+      "size": 2213,
+      "sha256": "e748cf07ef1b5570f5a8f882c6b469c0fa658ac670b8bf93ce4afafedd8df2da"
+    },
+    {
+      "path": "tools/mcp/requirements.in",
+      "size": 162,
+      "sha256": "a31be718be6c46f571e3ae2a24fdce691108b2e3e4a9eaa5cfa230c730dcbb21"
+    },
+    {
+      "path": "tools/mcp/requirements.lock.txt",
+      "size": 760,
+      "sha256": "c08b548d3e3f02062f515bb88a0cf3adc552c8a3734b3f164ad1b0f32636a360"
+    },
+    {
+      "path": "tools/package/README.md",
+      "size": 1209,
+      "sha256": "a403cd1ce348c5c52f2248d6bdeae343b65fd2dff00616be76b035bb8e661fd7"
+    },
+    {
+      "path": "tools/package/create_alpha.py",
+      "size": 3247,
+      "sha256": "4c2c590e57a95a4166c776c5f6a6d495ae3c5e4943b2463eae7f3b5094af5708"
+    },
+    {
+      "path": "tools/readiness/README.md",
+      "size": 1356,
+      "sha256": "dafa74e9e7c3738ee2c5c2ddd72ada7679e9f8f2fd213cd56497bf229392a708"
+    },
+    {
+      "path": "tools/readiness/configure-vmrest.cmd",
+      "size": 402,
+      "sha256": "b14fb9ace40b32277b985efee44a4ba88a2b2febc49458ee378256169e2c5537"
+    },
+    {
+      "path": "tools/readiness/package_validation.py",
+      "size": 1753,
+      "sha256": "1057d1544d39f556019340db515605df70c884898e5408cfe11d3a00494f1124"
+    }
+  ]
+}
