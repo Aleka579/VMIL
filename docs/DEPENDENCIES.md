@@ -22,8 +22,8 @@
 | vmrest.exe | 随所选Workstation提供，实际REST API兼容后启用；有限配置操作需要 | 官方清单/电源/设置读取及有限PUT；普通采集和VMX解析不以REST为前提 | 1.3.1 build-23775571；真实App有限应用/恢复、状态拒绝及精确媒体类型通过，临时接口已停止 |
 | VMware Tools | 与客户机OS及Workstation兼容且服务运行，具体版本先检查 | vmrun客体操作前置；应用只读采集不要求安装 | running，产品11.3.5.18557794、文件11.3.5.31214实测，不编造其他数值最低版 |
 | vmcli.exe | 可选，需实际存在且工具命令兼容 | 下载MCP的43个vmcli声明工具 | 17.5.2安装目录未发现，不属于当前最低基线必需依赖 |
-| .NET SDK | global.json固定10.0.401，latestPatch只允许同特性带后续补丁 | 宿主构建/测试；客户机运行自包含包不需要SDK | 项目内10.0.401，既有Release构建通过 |
-| .NET Runtime | .NET 10 LTS，当前包固定10.0.12 | 应用运行 | NETCore/WindowsDesktop均随包提供10.0.12 |
+| .NET SDK | global.json起点10.0.401，latestPatch允许同特性带稳定补丁 | 宿主构建/测试；客户机运行自包含包不需要SDK | 本地10.0.401；2026-10-17 CI实际10.0.402，构建/127单元/100集成通过 |
+| .NET Runtime | .NET 10 LTS，按具体包实际版本记录 | 应用运行 | 本地5de验收包10.0.12；CI包NETCore/WindowsDesktop实际10.0.13，未做客户机验收 |
 | C# / WPF / MVVM | C#14.0、.NET 10 WPF；MVVM为项目内实现 | 编译/界面 | Directory.Build.props与App项目固定，无额外MVVM框架 |
 | PowerShell | 7.6 LTS，项目内准备最新补丁7.6.6 | 宿主脚本；客户机EXE不依赖 | 7.6.6官方框架依赖ZIP/哈希/版本通过，复用.NET10.0.12；Codex自带仍7.6.5 |
 | Git for Windows | 已验证基线2.53.0.windows.3，采用维护中的安全补丁 | 源码版本管理 | 本次git --version核实；应用用户无需Git |
@@ -41,10 +41,12 @@ Python3.14维护至2030年10月，.NET 10 LTS维护至2028年11月；具体补�
 | --- | --- | --- | --- |
 | System.Management | 精确10.0.12 | Windows采集/运行 | src/VMIdentityLab.Windows/VMIdentityLab.Windows.csproj |
 | xunit.v3 | 精确4.0.1 | 两个测试项目，不随应用发布 | 两个测试csproj |
-| Microsoft.NETCore.App.Runtime.win-x64 | 当前发布10.0.12 | 自包含平台运行时 | 发布deps/runtimeconfig |
-| Microsoft.WindowsDesktop.App.Runtime.win-x64 | 当前发布10.0.12 | 自包含WPF运行时 | 发布deps/runtimeconfig |
+| Microsoft.NETCore.App.Runtime.win-x64 | 本地验收10.0.12 / CI实际10.0.13 | 自包含平台运行时 | 各包BUILD-INFO/deps/runtimeconfig，不跨包继承验收 |
+| Microsoft.WindowsDesktop.App.Runtime.win-x64 | 本地验收10.0.12 / CI实际10.0.13 | 自包含WPF运行时 | 各包BUILD-INFO/deps/runtimeconfig，不跨包继承验收 |
 
 四个源码工程是内部引用，当前v0.2源码版本随应用0.2.0-alpha.1；唯一版本定义在Directory.Build.props。v0.2未增加第三方依赖或升级工具链；本地0.1.0-alpha.2包保留v0.1版本。平台程序集由运行框架统一提供，不按DLL名字单独选版本。[体积清单](package-size-inventory.csv)记录旧alpha.1包，不代表新版包的逐文件清单。历史包与当前源码的区别见[版本记录](../CHANGELOG.md)。
+
+CI同特性带补丁选择来自既有latestPatch规则，不改源码版本或本机环境。官方[10.0.13发布记录](https://github.com/dotnet/core/blob/main/release-notes/10.0/10.0.13/10.0.13.md)确认2026-10-13发布，SDK10.0.402包含10.0.13运行时；下载CI包的实际来源/运行时/许可已核实，许可文本与官方版本一致，见[第三方说明](../THIRD-PARTY-NOTICES.md)。CI与本地客户机证据仍分开。
 
 ## NuGet完整已解析集合
 

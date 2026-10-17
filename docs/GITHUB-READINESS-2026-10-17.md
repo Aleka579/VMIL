@@ -34,6 +34,10 @@ TRX ZIP SHA256：`847cbc1c33fdd6639ebaa6766cdde676d0952acd2e10bbb478c7ee504e5088
 
 工作流使用`contents: read`、checkout不持久化凭据、单并行构建/测试，无VMware、客户机或私有报告依赖。它保留CI验证产物，不自动创建Release。最终文档同步后的运行也须核实，结果由对应[Actions记录](https://github.com/Aleka579/VMIL/actions)及维护日志追踪。
 
+文档同步提交`9e5d9188f69218c7dcb218f1f4bbabb254881364`对应[运行39024833451](https://github.com/Aleka579/VMIL/actions/runs/39024833451)也实际成功，构建零警告/错误、127/100均零失败/跳过。下载TRX为35191字节，SHA256 `fe07132ff107423fdcdc6a31056d606083ad973f2b85d58b1481717dbdb1229a`，两份实际XML计数通过；应用CI包65196388字节/412文件/解压147119946字节，SHA256 `f7e85568bc39d2c1e430f2ba32d1b84d3c58c87a0d25b72294f35a6a44195a4f`，CRC、实际来源/版本、运行时与五份第三方材料核实通过，没有运行该CI包。
+
+该CI包实际使用SDK10.0.402 / NETCore和WindowsDesktop10.0.13，是既有latestPatch规则的稳定补丁选择；本地5de客户机验收包仍为10.0.401 / 10.0.12。官方发布记录和10.0.13许可/完整声明已核实，包内文本与官方逐字节一致，见[第三方说明](../THIRD-PARTY-NOTICES.md)。此处据实区分补丁，不修改本机SDK、框架或客户机结论。
+
 ## 验收与交付范围
 
 | 项目 | 结果与证据 |

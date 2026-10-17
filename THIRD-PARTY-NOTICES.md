@@ -2,7 +2,7 @@
 
 原创源码采用 [MIT](LICENSE)，Copyright (c) 2026 Daniel Waltz。第三方文件保留自己的版权、许可和声明，原创 LICENSE 不替代它们。
 
-## 实际应用依赖
+## 本地验收包实际应用依赖
 
 | 组件 | 实际版本 | 来源/许可证据 | 随包材料 |
 | --- | --- | --- | --- |
@@ -12,6 +12,10 @@
 | System.CodeDom（传递依赖） | 10.0.12 | Microsoft 官方包 nuspec 的 MIT 表达式与版权字段 | third-party/System.CodeDom.nuspec；共享 third-party/NETCore-THIRD-PARTY-NOTICES.txt |
 
 运行时第三方声明可能包含各自不同的许可；保留官方完整声明，不将它们一概改称原创 MIT。SDK 的开发工具许可不作为上述运行时包的许可依据，SDK 不随应用分发。
+
+2026-10-17的GitHub CI按global.json允许的latestPatch实际使用SDK10.0.402、NETCore/WindowsDesktop Runtime10.0.13；System.Management和System.CodeDom仍为源码固定10.0.12。上表10.0.12保留本地5de验收包身份，不代表所有CI包的运行时版本。实际CI包以BUILD-INFO.json和runtimeconfig为准，客户机验收不自动继承。
+
+已将下载CI包中的NETCore-LICENSE.txt、NETCore-THIRD-PARTY-NOTICES.txt与[官方runtime v10.0.13许可](https://github.com/dotnet/runtime/blob/v10.0.13/LICENSE.TXT)及[完整声明](https://github.com/dotnet/runtime/blob/v10.0.13/THIRD-PARTY-NOTICES.TXT)逐字节核对一致；官方WindowsDesktop10.0.13 NuGet元数据许可为MIT，随包保留其MIT正文。现有去重许可文本可继续覆盖该补丁，无需重复添加同一声明。官方[10.0.13发布记录](https://github.com/dotnet/core/blob/main/release-notes/10.0/10.0.13/10.0.13.md)日期为2026-10-13；本机工具未因此升级。
 
 2026-10-10 核对 NETCore、System.Management、System.CodeDom 的第三方声明内容一致后，按用户要求仅保留一份完整 NETCore-THIRD-PARTY-NOTICES.txt，并由上表三个组件共享引用。各组件的 MIT/版权声明及 nuspec 仍分别保留；没有删去声明正文。
 
@@ -31,4 +35,4 @@ GitHub Action 来自官方 checkout v7.0.1、setup-dotnet v6.0.0、upload-artifa
 - [xUnit v3 4.0.1 发布说明](https://xunit.net/releases/v3/4.0.1)
 - [xUnit 包与许可证](https://www.nuget.org/packages/xunit.v3/4.0.1)
 
-核查日期：2026-10-09。实际发布时重新核对版本、补丁与官方声明；当前材料属于本地 Alpha 准备，不表示远程发布已完成。
+初始核查日期：2026-10-09；CI实际补丁与许可复核：2026-10-17。源码已公开、CI通过，尚未创建GitHub Release；实际发布仍按具体包重新核对版本、补丁与官方声明。
