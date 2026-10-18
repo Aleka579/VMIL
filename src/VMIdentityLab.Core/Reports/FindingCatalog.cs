@@ -12,7 +12,7 @@ public static class FindingCatalog
         new("smbios.manufacturer", "smbios", "Win32_ComputerSystem.Manufacturer", "系统厂商", "System manufacturer"),
         new("smbios.model", "smbios", "Win32_ComputerSystem.Model", "系统型号", "System model"),
         new("smbios.biosVersion", "smbios", "Win32_BIOS.SMBIOSBIOSVersion", "BIOS 版本", "BIOS version"),
-        new("cpu.model", "cpu", "Win32_Processor.Name", "处理器型号", "Processor model"),
+        new("cpu.model", "cpu", "CPUID.80000002..80000004", "处理器型号", "Processor model"),
         new("cpu.logicalProcessors", "cpu", "Environment.ProcessorCount", "逻辑处理器", "Logical processors"),
         new("cpu.hypervisorPresent", "cpu", "CPUID.1.ECX[31]", "Hypervisor 信号", "Hypervisor signal"),
         new("cpu.hypervisorVendor", "cpu", "CPUID.40000000", "Hypervisor 厂商", "Hypervisor vendor"),

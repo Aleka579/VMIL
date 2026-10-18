@@ -6,6 +6,27 @@ namespace VMIdentityLab.UnitTests;
 
 public sealed class ReportTests
 {
+    [Theory]
+    [InlineData("Win32_Processor.Name")]
+    [InlineData("CPUID.80000002..80000004")]
+    public void CpuReportRoundTripRetainsItsReviewedObservationSource(string source)
+    {
+        var item = ReportSamples.Finding("cpu.model", FindingValue.FromText("Synthetic CPU")) with { Source = source };
+        var parsed = ReportJson.Deserialize(ReportJson.Serialize(ReportSamples.Report(item)));
+        Assert.Equal(source, Assert.Single(parsed.Findings).Source);
+    }
+
+    [Fact]
+    public void CpuReportSourceDoesNotExposeUnreviewedInput()
+    {
+        var item = ReportSamples.Finding("cpu.model", FindingValue.FromText("Synthetic CPU")) with
+        {
+            Source = @"C:\Users\SyntheticPrivate\provider.dll"
+        };
+        var parsed = ReportJson.Deserialize(ReportJson.Serialize(ReportSamples.Report(item)));
+        Assert.Equal("CPUID.80000002..80000004", Assert.Single(parsed.Findings).Source);
+    }
+
     [Fact]
     public void JsonPreservesTypedValuesAndCollectionFailures()
     {

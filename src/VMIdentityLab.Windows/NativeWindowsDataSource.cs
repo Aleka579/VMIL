@@ -11,11 +11,15 @@ namespace VMIdentityLab.Windows;
 
 public sealed class NativeWindowsDataSource : IWindowsDataSource
 {
-    // At most one native query can run. A timed-out WMI call cannot accumulate workers.
+    // At most one WMI query can run. A timed-out WMI call cannot accumulate workers.
     private readonly SemaphoreSlim nativeGate = new(1, 1);
 
     public async Task<IReadOnlyList<Finding>> CollectCategoryAsync(ObservationCategory category, DateTimeOffset observedAt, CancellationToken cancellationToken)
     {
+        // CPU observations are local instructions/properties and must not queue behind slow WMI.
+        if (category == ObservationCategory.Cpu)
+            return await Task.Run(() => Read(category, observedAt, cancellationToken), cancellationToken);
+
         await nativeGate.WaitAsync(cancellationToken);
         try
         {
@@ -47,15 +51,18 @@ public sealed class NativeWindowsDataSource : IWindowsDataSource
                 var bios = QueryOne("SELECT SMBIOSBIOSVersion FROM Win32_BIOS", ["SMBIOSBIOSVersion"], token);
                 return [Text("smbios.manufacturer", system, "Manufacturer"), Text("smbios.model", system, "Model"), Text("smbios.biosVersion", bios, "SMBIOSBIOSVersion")];
             case ObservationCategory.Cpu:
-                var processor = QueryOne("SELECT Name FROM Win32_Processor", ["Name"], token);
-                var cpu = new List<Finding> { Text("cpu.model", processor, "Name"), Item("cpu.logicalProcessors", FindingValue.FromNumber(Environment.ProcessorCount, ValueUnit.Count)) };
+                var cpu = new List<Finding> { Item("cpu.logicalProcessors", FindingValue.FromNumber(Environment.ProcessorCount, ValueUnit.Count)) };
                 if (!X86Base.IsSupported)
                 {
+                    cpu.Add(Item("cpu.model", new(), CollectionStatus.NotSupported));
                     cpu.Add(Item("cpu.hypervisorPresent", new(), CollectionStatus.NotSupported));
                     cpu.Add(Item("cpu.hypervisorVendor", new(), CollectionStatus.NotSupported));
                 }
                 else
                 {
+                    var name = CpuBrandString.Read(leaf => X86Base.CpuId(leaf, 0));
+                    cpu.Add(Item("cpu.model", name is null ? new() : FindingValue.FromText(name),
+                        name is null ? CollectionStatus.NotSupported : CollectionStatus.Success));
                     var present = (X86Base.CpuId(1, 0).Ecx & unchecked((int)0x80000000)) != 0;
                     cpu.Add(Item("cpu.hypervisorPresent", FindingValue.FromBoolean(present)));
                     if (present)

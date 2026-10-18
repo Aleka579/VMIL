@@ -23,7 +23,9 @@ public static partial class ReportPrivacy
             findings.Add(finding with
             {
                 Category = definition.Category,
-                Source = definition.Source,
+                // Retain the reviewed source of older reports instead of relabeling WMI data as CPUID.
+                Source = finding.Id == "cpu.model" && finding.Source == "Win32_Processor.Name"
+                    ? finding.Source : definition.Source,
                 Sensitivity = sensitivity,
                 Value = value,
                 Explanation = StatusExplanation(finding.Status)
