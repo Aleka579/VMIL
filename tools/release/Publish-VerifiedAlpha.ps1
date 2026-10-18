@@ -58,11 +58,11 @@ try {
         $stream = $archive.GetEntry($path).Open()
         try { $hash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($stream)).ToLowerInvariant() }
         finally { $stream.Dispose() }
-        [void]$manifest.Append($hash).Append('  ').Append($path).Append("`n")
+        [void]$manifest.Append($hash).Append('  ').Append($path).Append("`r`n")
     }
     [IO.File]::WriteAllText((Join-Path $stage $manifestName), $manifest.ToString(), $utf8)
 } finally { $archive.Dispose() }
-[IO.File]::WriteAllText((Join-Path $stage "$zipName.sha256"), "$expectedZipHash  $zipName`n", $utf8)
+[IO.File]::WriteAllText((Join-Path $stage "$zipName.sha256"), "$expectedZipHash  $zipName`r`n", $utf8)
 $expectedAssets = [ordered]@{
     $zipName = $expectedZipHash
     "$zipName.sha256" = 'a5128808d2e8f97e437ee63cb95ba8b47a1e8e499a8ccad4a1ee637df9c800d7'
