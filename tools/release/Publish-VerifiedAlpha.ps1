@@ -74,8 +74,8 @@ foreach ($name in $expectedAssets.Keys) {
     }
 }
 
-$existing = @(Invoke-RestMethod -Uri "$api/releases?per_page=100" -Headers $headers)
-$refs = @(Invoke-RestMethod -Uri "$api/git/matching-refs/tags/$tag" -Headers $headers)
+[array]$existing = Invoke-RestMethod -Uri "$api/releases?per_page=100" -Headers $headers
+[array]$refs = Invoke-RestMethod -Uri "$api/git/matching-refs/tags/$tag" -Headers $headers
 if (@($existing | Where-Object tag_name -eq $tag).Count -or
     @($refs | Where-Object ref -eq "refs/tags/$tag").Count) {
     throw 'The target release or tag already exists; inspect it instead of overwriting.'
@@ -103,7 +103,7 @@ foreach ($name in $expectedAssets.Keys) {
     }
     Write-Output "Verified uploaded asset $name ($($asset.size) bytes, $($asset.digest))"
 }
-$assets = @(Invoke-RestMethod -Uri "$api/releases/$($release.id)/assets" -Headers $headers)
+[array]$assets = Invoke-RestMethod -Uri "$api/releases/$($release.id)/assets" -Headers $headers
 if ($assets.Count -ne 3) { throw 'Expected exactly three verified release assets; draft retained.' }
 $published = Invoke-RestMethod -Method Patch -Uri "$api/releases/$($release.id)" -Headers $headers -ContentType 'application/json; charset=utf-8' -Body '{"draft":false,"prerelease":true,"make_latest":"false"}'
 $tagRef = Invoke-RestMethod -Uri "$api/git/ref/tags/$tag" -Headers $headers
