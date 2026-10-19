@@ -23,9 +23,7 @@ public static partial class ReportPrivacy
             findings.Add(finding with
             {
                 Category = definition.Category,
-                // Retain the reviewed source of older reports instead of relabeling WMI data as CPUID.
-                Source = finding.Id == "cpu.model" && finding.Source == "Win32_Processor.Name"
-                    ? finding.Source : definition.Source,
+                Source = ReviewedSource(finding, definition),
                 Sensitivity = sensitivity,
                 Value = value,
                 Explanation = StatusExplanation(finding.Status)
@@ -72,6 +70,13 @@ public static partial class ReportPrivacy
     }
 
     private static string StateSource(string value) => value is "notQueried" or "vmrun.list" or "vmrest.power" or "unavailable" ? value : "unverified";
+    private static string ReviewedSource(Finding finding, FindingDefinition definition)
+    {
+        // Legacy identifier reports did not identify a collector. Do not relabel them as new WMI/.NET data.
+        if (definition.Sensitivity == DataSensitivity.Identifier)
+            return finding.Source == definition.Source || finding.Source == "identifier" ? finding.Source : "unverified";
+        return finding.Id == "cpu.model" && finding.Source == "Win32_Processor.Name" ? finding.Source : definition.Source;
+    }
     private static string DiagnosticCode(string value) => value is "collection.partial" or "vmx.unavailable"
         or "vmx.ambiguous" or "vmx.encoding" or "vmx.stateUnknown" or "report.unknownFieldsOmitted" ? value : "diagnostic.unknown";
 

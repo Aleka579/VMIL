@@ -19,6 +19,8 @@ using Localization = VMIdentityLab.App.Infrastructure.Localization;
 namespace VMIdentityLab.App.ViewModels;
 
 public sealed record FindingRow(string Category, string Name, string Value, string Status, string Source, string Explanation);
+public sealed record IdentityRow(string Name, string Declaration, string Observation, string Status,
+    string Support, string Source, string Time, string Basis);
 public sealed record VmxRow(string Key, string Value, string Support);
 public sealed record DifferenceRow(string Name, string Left, string Right, string Result, string Reason);
 public sealed record ConfigDiffRow(string Key, string Before, string After, string Impact);
@@ -42,6 +44,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     private string? currentVmxPath;
     private int selectedPage;
     private bool isBusy;
+    private bool includeIdentifiers;
+    private IdentityRow? selectedIdentity;
     private string statusText = Localization.Text("Status.Ready");
     private string requestedMemory = "";
     private string requestedCpu = "";
@@ -59,6 +63,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public ObservableCollection<FindingRow> Findings { get; } = [];
+    public ObservableCollection<IdentityRow> IdentityRows { get; } = [];
     public ObservableCollection<VmxRow> VmxRows { get; } = [];
     public ObservableCollection<DifferenceRow> Differences { get; } = [];
     public ObservableCollection<ConfigDiffRow> ConfigChanges { get; } = [];
@@ -78,7 +83,10 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     public ICommand ExportHtmlCommand { get; }
 
     public int SelectedPage { get => selectedPage; set { selectedPage = value; Notify(); Notify(nameof(PageTitle)); } }
-    public bool IsBusy { get => isBusy; private set { isBusy = value; Notify(); CommandManager.InvalidateRequerySuggested(); } }
+    public bool IsBusy { get => isBusy; private set { isBusy = value; Notify(); Notify(nameof(CanChooseIdentifiers)); CommandManager.InvalidateRequerySuggested(); } }
+    public bool CanChooseIdentifiers => !IsBusy;
+    public bool IncludeIdentifiers { get => includeIdentifiers; set { includeIdentifiers = value; Notify(); } }
+    public IdentityRow? SelectedIdentity { get => selectedIdentity; set { selectedIdentity = value; Notify(); } }
     public string StatusText { get => statusText; private set { statusText = value; Notify(); } }
     public string PageTitle => Localization.Text(new[] { "Nav.Overview", "Nav.Detection", "Nav.Configuration", "Nav.Comparison", "Nav.Reports" }[Math.Clamp(SelectedPage, 0, 4)]);
     public string OsText => currentReport?.System.Os is { Length: > 0 } text ? text : Localization.Text("State.NoReport");
@@ -118,7 +126,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         CollectCommand = new AsyncCommand(() => RunOperationAsync(async token =>
         {
             var progress = new Progress<CollectionProgress>(step => StatusText = $"{Localization.Text("Status.Collecting")} {step.Completed}/{step.Total}");
-            currentReport = await Task.Run(() => collector.CollectAsync(token, progress), token);
+            var readIdentifiers = IncludeIdentifiers;
+            currentReport = await Task.Run(() => collector.CollectAsync(token, progress, readIdentifiers), token);
             if (currentVmx is not null) currentReport = currentReport with { VmxSummary = currentVmx.Document.ToSummary(currentVmx.PowerState) };
             Refresh();
             return true;
@@ -137,6 +146,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ImportRightCommand = new AsyncCommand(() => RunOperationAsync(token => ImportAsync(true, token)), () => !IsBusy);
         ExportJsonCommand = new AsyncCommand(() => RunOperationAsync(token => ExportAsync(false, token)), () => !IsBusy && currentReport is not null);
         ExportHtmlCommand = new AsyncCommand(() => RunOperationAsync(token => ExportAsync(true, token)), () => !IsBusy && currentReport is not null);
+        Refresh();
     }
 
     private async Task RunOperationAsync(Func<CancellationToken, Task<bool>> operation)
@@ -440,6 +450,24 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
             foreach (var item in currentReport.Findings)
                 Findings.Add(new(Localization.Text("Category." + item.Category), FindingCatalog.Title(item.Id, Localization.English),
                     DisplayValue(item.Value), Localization.Text("Collection." + item.Status), item.Source, item.Explanation));
+        IdentityRows.Clear();
+        var declarations = currentVmx is null ? null : VmxIdentityReader.Read(currentVmx.Document);
+        foreach (var item in IdentityAnalyzer.Analyze(currentReport, declarations))
+        {
+            var observation = item.Observation;
+            var source = observation?.Source ?? Localization.Text("Identity.ExpectedSource") + item.Definition.Source;
+            if (source is "identifier" or "unverified") source += " · " + Localization.Text("Identity.UnverifiedSource");
+            if (item.Declaration.Source.Length != 0) source += " | " + item.Declaration.Source;
+            IdentityRows.Add(new(FindingCatalog.Title(item.Definition.Id, Localization.English),
+                item.Declaration.State == DeclarationState.Present ? DisplayValue(item.Declaration.Value)
+                    : Localization.Text("Declaration." + item.Declaration.State),
+                observation is null ? Localization.Text("Identity.NotCollected") : DisplayValue(observation.Value),
+                observation is null ? Localization.Text("Identity.NotCollected") : Localization.Text("Collection." + observation.Status),
+                Localization.Text("Identity.Support." + item.WriteSupport), source,
+                observation?.ObservedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss zzz") ?? "—",
+                Localization.Text("Identity.Basis." + item.Basis)));
+        }
+        SelectedIdentity = IdentityRows.FirstOrDefault();
         VmxRows.Clear();
         if (currentVmx is not null)
         {
@@ -484,7 +512,9 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
             Findings = [F("smbios.manufacturer", FindingValue.FromText("Synthetic OEM")), F("cpu.model", FindingValue.FromText("Synthetic 8-core processor")),
                 F("cpu.logicalProcessors", FindingValue.FromNumber(16, ValueUnit.Count)), F("cpu.hypervisorPresent", FindingValue.FromBoolean(true)),
                 F("cpu.hypervisorVendor", FindingValue.FromText("Microsoft Hv")), F("pnp.vmwareDeviceCount", FindingValue.FromNumber(0, ValueUnit.Count)),
-                F("system.memoryBytes", FindingValue.FromNumber(17179869184m, ValueUnit.Bytes)), F("tools.installed", FindingValue.FromBoolean(false))]
+                F("system.memoryBytes", FindingValue.FromNumber(17179869184m, ValueUnit.Bytes)), F("tools.installed", FindingValue.FromBoolean(false)),
+                F("smbios.uuid", FindingValue.FromText("11111111-2222-3333-4444-555555555555")),
+                F("smbios.serialNumber", FindingValue.FromText("SYNTHETIC-SERIAL")), F("network.macAddress", FindingValue.FromText("020000000001"))]
         });
         rightReport = currentReport with { Findings = [.. currentReport.Findings.Select(item => item.Id == "system.memoryBytes" ? item with { Value = FindingValue.FromNumber(4294967296m, ValueUnit.Bytes) } : item)] };
         currentVmx = new(VmxDocument.Parse(System.Text.Encoding.UTF8.GetBytes("virtualHW.version = \"19\"\nmemsize = \"4096\"\nnumvcpus = \"2\"\ncpuid.coresPerSocket = \"1\"\nguestOS = \"windows11-64\"\n")), PowerStateEvidence.Unknown("Synthetic preview"));

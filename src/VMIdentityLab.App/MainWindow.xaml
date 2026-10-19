@@ -79,9 +79,13 @@
                 </StackPanel>
             </ScrollViewer>
             <Grid Grid.Row="1" Visibility="{Binding SelectedPage, Converter={StaticResource PageVisibility}, ConverterParameter=1}">
-                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
-                <DockPanel Margin="0,0,0,18"><Button Content="{DynamicResource Action.ImportLeft}" Command="{Binding ImportLeftCommand}" DockPanel.Dock="Right" /><TextBlock Text="{DynamicResource Detection.Description}" Style="{StaticResource Muted}" /></DockPanel>
-                <Border Grid.Row="1" Style="{StaticResource Card}" Padding="0" ClipToBounds="True">
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                <DockPanel Margin="0,0,0,10"><Button Content="{DynamicResource Action.ImportLeft}" Command="{Binding ImportLeftCommand}" DockPanel.Dock="Right" /><TextBlock Text="{DynamicResource Detection.Description}" Style="{StaticResource Muted}" /></DockPanel>
+                <CheckBox x:Name="IncludeIdentifiersCheckBox" Grid.Row="1" Content="{DynamicResource Identity.IncludeIdentifiers}" IsChecked="{Binding IncludeIdentifiers}"
+                          IsEnabled="{Binding CanChooseIdentifiers}" Margin="0,0,0,12" ToolTip="{DynamicResource Identity.Privacy}" />
+                <TabControl Grid.Row="2" Background="Transparent" BorderThickness="0">
+                <TabItem Header="{DynamicResource Identity.Observations}">
+                <Border Style="{StaticResource Card}" Padding="0" ClipToBounds="True">
                     <DataGrid x:Name="FindingsTable" ItemsSource="{Binding Findings}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="{DynamicResource Column.Category}" Binding="{Binding Category}" Width="75" ElementStyle="{StaticResource CellText}" />
@@ -93,6 +97,30 @@
                         <DataGrid.RowStyle><Style TargetType="DataGridRow"><Setter Property="ToolTip" Value="{Binding Explanation}" /></Style></DataGrid.RowStyle>
                     </DataGrid>
                 </Border>
+                </TabItem>
+                <TabItem x:Name="IdentityAnalysisTab" Header="{DynamicResource Identity.Title}">
+                    <Grid Margin="0,10,0,0">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <TextBlock Text="{DynamicResource Identity.Description}" Style="{StaticResource Muted}" Margin="0,0,0,12" />
+                        <DataGrid x:Name="IdentityTable" Grid.Row="1" ItemsSource="{Binding IdentityRows}" SelectedItem="{Binding SelectedIdentity}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource Column.Name}" Binding="{Binding Name}" Width="180" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{DynamicResource Identity.Declaration}" Binding="{Binding Declaration}" Width="145" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{DynamicResource Identity.Observation}" Binding="{Binding Observation}" Width="130" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{DynamicResource Column.Status}" Binding="{Binding Status}" Width="95" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{DynamicResource Identity.WriteSupport}" Binding="{Binding Support}" Width="*" MinWidth="140" ElementStyle="{StaticResource CellText}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,10,0,0" Padding="12">
+                            <StackPanel>
+                                <TextBlock Text="{Binding SelectedIdentity.Source}" Style="{StaticResource Muted}" />
+                                <TextBlock Text="{Binding SelectedIdentity.Time}" Style="{StaticResource Muted}" Margin="0,4,0,4" />
+                                <TextBlock Text="{Binding SelectedIdentity.Basis}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+                </TabControl>
             </Grid>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding SelectedPage, Converter={StaticResource PageVisibility}, ConverterParameter=2}"><Grid>
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>

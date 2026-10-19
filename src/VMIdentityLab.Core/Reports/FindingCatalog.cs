@@ -23,9 +23,9 @@ public static class FindingCatalog
         new("system.build", "system", "Win32_OperatingSystem.BuildNumber", "系统 Build", "OS build"),
         new("system.architecture", "system", "RuntimeInformation.OSArchitecture", "系统架构", "OS architecture"),
         new("system.memoryBytes", "system", "Win32_ComputerSystem.TotalPhysicalMemory", "物理内存", "Physical memory"),
-        new("smbios.serialNumber", "smbios", "identifier", "序列号（脱敏）", "Serial number (redacted)", DataSensitivity.Identifier),
-        new("smbios.uuid", "smbios", "identifier", "UUID（脱敏）", "UUID (redacted)", DataSensitivity.Identifier),
-        new("network.macAddress", "system", "identifier", "MAC（脱敏）", "MAC (redacted)", DataSensitivity.Identifier)
+        new("smbios.serialNumber", "smbios", "Win32_BIOS.SerialNumber", "BIOS 序列号（脱敏）", "BIOS serial number (redacted)", DataSensitivity.Identifier),
+        new("smbios.uuid", "smbios", "Win32_ComputerSystemProduct.UUID", "UUID（脱敏）", "UUID (redacted)", DataSensitivity.Identifier),
+        new("network.macAddress", "system", "NetworkInterface.GetAllNetworkInterfaces/GetPhysicalAddress", "MAC 地址集合（脱敏）", "MAC address set (redacted)", DataSensitivity.Identifier)
     ];
 
     public static FrozenDictionary<string, FindingDefinition> ById { get; } =

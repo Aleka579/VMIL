@@ -36,6 +36,8 @@ jobs:
         run: dotnet test --project tests/VMIdentityLab.IntegrationTests/VMIdentityLab.IntegrationTests.csproj -c Release --no-build --parallel none --report-xunit-trx --report-xunit-trx-filename files.trx --results-directory artifacts/test-results
       - name: Publish local artifact
         run: dotnet publish src/VMIdentityLab.App/VMIdentityLab.App.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -p:DebugSymbols=false -m:1 --disable-build-servers -o artifacts/publish/win-x64
+      - name: Publish matching guest validation driver
+        run: dotnet publish tools/desktop/VMIdentityLab.DesktopTest/VMIdentityLab.DesktopTest.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -p:DebugSymbols=false -m:1 --disable-build-servers -o artifacts/publish/test-driver
       - name: Test results
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -71,3 +73,13 @@ jobs:
         with:
           name: VMIdentityLab-win-x64-alpha
           path: artifacts/publish/win-x64
+      - name: Guest validation driver entries
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: VMIdentityLab-guest-test-driver
+          path: |
+            artifacts/publish/test-driver/VMIdentityLab.DesktopTest.exe
+            artifacts/publish/test-driver/VMIdentityLab.DesktopTest.dll
+            artifacts/publish/test-driver/VMIdentityLab.DesktopTest.deps.json
+            artifacts/publish/test-driver/VMIdentityLab.DesktopTest.runtimeconfig.json
+          if-no-files-found: error

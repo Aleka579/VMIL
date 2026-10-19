@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Globalization;
 using System.Management;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
@@ -46,6 +47,14 @@ public sealed class NativeWindowsDataSource : IWindowsDataSource
 
         switch (category)
         {
+            case ObservationCategory.Identifiers:
+                var product = QueryOne("SELECT UUID FROM Win32_ComputerSystemProduct", ["UUID"], token);
+                var serial = QueryOne("SELECT SerialNumber FROM Win32_BIOS", ["SerialNumber"], token);
+                var uuid = Text("smbios.uuid", product, "UUID");
+                if (uuid.Status == CollectionStatus.Success && (!Guid.TryParse(uuid.Value.Text, out var parsedUuid)
+                    || parsedUuid == Guid.Empty || parsedUuid == Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff")))
+                    uuid = Item("smbios.uuid", new(), CollectionStatus.NotSupported);
+                return [uuid, Text("smbios.serialNumber", serial, "SerialNumber"), ReadMacAddresses(time, token)];
             case ObservationCategory.Smbios:
                 var system = QueryOne("SELECT Manufacturer, Model FROM Win32_ComputerSystem", ["Manufacturer", "Model"], token);
                 var bios = QueryOne("SELECT SMBIOSBIOSVersion FROM Win32_BIOS", ["SMBIOSBIOSVersion"], token);
@@ -125,6 +134,31 @@ public sealed class NativeWindowsDataSource : IWindowsDataSource
     }
 
     private sealed record QueryResult(Dictionary<string, object?> Values, CollectionStatus Status);
+
+    private static Finding ReadMacAddresses(DateTimeOffset time, CancellationToken token)
+    {
+        Finding Result(FindingValue value, CollectionStatus status) => new()
+        {
+            Id = "network.macAddress", Category = "system", Source = FindingCatalog.ById["network.macAddress"].Source,
+            ObservedAt = time, Value = value, Status = status, Sensitivity = DataSensitivity.Identifier
+        };
+        try
+        {
+            var addresses = new SortedSet<string>(StringComparer.Ordinal);
+            foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                token.ThrowIfCancellationRequested();
+                if (adapter.NetworkInterfaceType is NetworkInterfaceType.Loopback or NetworkInterfaceType.Tunnel) continue;
+                var bytes = adapter.GetPhysicalAddress().GetAddressBytes();
+                if (bytes.Length == 6 && bytes.Any(value => value != 0)) addresses.Add(Convert.ToHexString(bytes));
+            }
+            return addresses.Count == 0 ? Result(new(), CollectionStatus.NotSupported)
+                : Result(FindingValue.FromText(string.Join(";", addresses)), CollectionStatus.Success);
+        }
+        catch (UnauthorizedAccessException) { return Result(new(), CollectionStatus.AccessDenied); }
+        catch (PlatformNotSupportedException) { return Result(new(), CollectionStatus.NotSupported); }
+        catch (NetworkInformationException) { return Result(new(), CollectionStatus.Failed); }
+    }
     private static ManagementObjectSearcher Searcher(string query) => new(new ManagementScope("root\\cimv2"),
         new ObjectQuery(query), new System.Management.EnumerationOptions { ReturnImmediately = false, Timeout = TimeSpan.FromSeconds(2) });
 
