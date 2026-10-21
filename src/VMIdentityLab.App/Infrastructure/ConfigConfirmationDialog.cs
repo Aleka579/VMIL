@@ -18,12 +18,27 @@ internal sealed class ConfigConfirmationDialog : Window
         panel.Children.Add(new TextBlock { Text = Title, FontSize = 20, FontWeight = FontWeights.SemiBold });
         panel.Children.Add(new TextBox { Text = preview.TargetPath, IsReadOnly = true, TextWrapping = TextWrapping.Wrap,
             Margin = new(0, 12, 0, 12) });
-        foreach (var change in preview.Plan.Changes)
+        var differences = new StackPanel();
+        void RefreshDifferences(bool reveal)
         {
-            panel.Children.Add(new TextBlock { Text = $"{change.Key}: {change.Before} → {change.After} {change.Unit}",
-                FontWeight = FontWeights.SemiBold, Margin = new(0, 8, 0, 4) });
-            panel.Children.Add(new TextBlock { Text = Localization.Text(change.Key == "memsize" ? "Config.MemoryImpact" : "Config.CpuImpact"),
-                TextWrapping = TextWrapping.Wrap });
+            differences.Children.Clear();
+            foreach (var change in preview.Plan.Changes)
+            {
+                differences.Children.Add(new TextBlock { Text = $"{change.Key}: {ConfigPresentation.Value(change, false, reveal)} → {ConfigPresentation.Value(change, true, reveal)}",
+                    FontWeight = FontWeights.SemiBold, Margin = new(0, 8, 0, 4), TextWrapping = TextWrapping.Wrap });
+                differences.Children.Add(new TextBlock { Text = ConfigPresentation.Impact(change), TextWrapping = TextWrapping.Wrap });
+            }
+        }
+        RefreshDifferences(false);
+        panel.Children.Add(differences);
+        if (preview.Plan.IsIdentityChange)
+        {
+            var reveal = new CheckBox { Content = Localization.Text("IdentityConfig.Reveal"), Margin = new(0, 12, 0, 8) };
+            System.Windows.Automation.AutomationProperties.SetAutomationId(reveal, "RevealIdentityConfig");
+            reveal.Checked += (_, _) => RefreshDifferences(true);
+            reveal.Unchecked += (_, _) => RefreshDifferences(false);
+            panel.Children.Add(reveal);
+            panel.Children.Add(new TextBlock { Text = Localization.Text("IdentityConfig.Privacy"), TextWrapping = TextWrapping.Wrap });
         }
         panel.Children.Add(new TextBlock { Text = Localization.Text(approved ? "Config.BackupExplanation" : "Config.ReviewOnly"),
             TextWrapping = TextWrapping.Wrap, Margin = new(0, 18, 0, 12) });

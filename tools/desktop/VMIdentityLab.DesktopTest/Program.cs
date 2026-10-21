@@ -17,6 +17,8 @@ internal static class Program
     [DllImport("user32.dll", SetLastError = true)]
     private static extern nint SendMessageTimeoutW(nint window, uint message, nuint wParam, nint lParam,
         uint flags, uint timeout, out nuint result);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool PostMessageW(nint window, uint message, nuint wParam, nint lParam);
     [DllImport("user32.dll")] private static extern bool ShowWindowAsync(nint window, int command);
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SetWindowPos(nint window, nint after, int x, int y, int width, int height, uint flags);
@@ -75,6 +77,30 @@ internal static class Program
                     Unique(windows.Where(window => window.Current.Name == args[2])).SetFocus();
                     break;
                 case "invoke": Invoke(Invokable(args[2])); break;
+                case "context-menu":
+                    var contextItem = Unique(candidates.Where(element => element.Current.Name == args[2]
+                        && element.Current.ControlType == ControlType.TreeItem
+                        && element.TryGetCurrentPattern(SelectionItemPattern.Pattern, out _)));
+                    var contextSelection = (SelectionItemPattern)contextItem.GetCurrentPattern(SelectionItemPattern.Pattern);
+                    contextSelection.Select();
+                    if (!contextSelection.Current.IsSelected) throw new InvalidOperationException("Tree selection did not persist.");
+                    contextItem.SetFocus();
+                    var contextTree = contextItem;
+                    while (contextTree.Current.ControlType != ControlType.Tree)
+                        contextTree = TreeWalker.ControlViewWalker.GetParent(contextTree)
+                            ?? throw new InvalidOperationException("No native tree control.");
+                    var contextHandle = contextTree.Current.NativeWindowHandle;
+                    GetWindowThreadProcessId(contextHandle, out var contextOwner);
+                    var contextClass = new StringBuilder(128);
+                    GetClassNameW(contextHandle, contextClass, 128);
+                    if (contextHandle == 0 || contextOwner != pid
+                        || contextClass.ToString() is not ("SysTreeView32" or "ATL:SysTreeView32"))
+                        throw new InvalidOperationException("Tree ownership could not be verified.");
+                    // Keyboard-context location (-1) asks the control to anchor to
+                    // its selected item. Post avoids blocking on TrackPopupMenu.
+                    if (!PostMessageW(contextHandle, 0x7b, (nuint)contextHandle, -1))
+                        throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                    break;
                 case "check":
                     var checkbox = Unique(candidates.Where(element => element.Current.AutomationId == args[2]
                         && element.Current.ControlType == ControlType.CheckBox

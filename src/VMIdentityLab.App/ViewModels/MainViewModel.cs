@@ -31,10 +31,12 @@ public sealed record BackupHistoryRow(VmxBackupHistoryEntry Entry) : INotifyProp
     public string Target => Path.GetFileName(Entry.Receipt.TargetPath);
     public string Operation => Localization.Text(Entry.Operation == "restore" ? "History.Restore" : "History.Apply");
     public string Backup => Entry.Receipt.BackupPath;
+    // WPF row automation may use ToString(); never expose nested private identity receipts.
+    public override string ToString() => $"{Time} · {Target} · {Operation}";
     internal void RefreshLanguage() => PropertyChanged?.Invoke(this, new(nameof(Operation)));
 }
 
-public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
+public sealed partial class MainViewModel : INotifyPropertyChanged, IDisposable
 {
     private readonly WindowsCollector collector = new();
     private CancellationTokenSource? operationCancellation;
@@ -58,8 +60,9 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     private string historyNoticeKey = "History.Empty";
     private string recoveryLocation = "";
     private string? configurationOutcome;
-    private readonly IVmxBackupHistory backupHistory = new LocalVmxBackupHistory(Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "VMIdentityLab", "configuration-history"));
+    private readonly IVmxBackupHistory backupHistory;
+    private readonly IVmxWritePolicy configurationPolicy;
+    private readonly string? configurationTarget;
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public ObservableCollection<FindingRow> Findings { get; } = [];
@@ -83,7 +86,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     public ICommand ExportHtmlCommand { get; }
 
     public int SelectedPage { get => selectedPage; set { selectedPage = value; Notify(); Notify(nameof(PageTitle)); } }
-    public bool IsBusy { get => isBusy; private set { isBusy = value; Notify(); Notify(nameof(CanChooseIdentifiers)); CommandManager.InvalidateRequerySuggested(); } }
+    public bool IsBusy { get => isBusy; private set { isBusy = value; Notify(); Notify(nameof(CanChooseIdentifiers)); Notify(nameof(CanChooseExperiment)); Notify(nameof(CanReviewExperiment)); CommandManager.InvalidateRequerySuggested(); } }
     public bool CanChooseIdentifiers => !IsBusy;
     public bool IncludeIdentifiers { get => includeIdentifiers; set { includeIdentifiers = value; Notify(); } }
     public IdentityRow? SelectedIdentity { get => selectedIdentity; set { selectedIdentity = value; Notify(); } }
@@ -121,8 +124,18 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         set { selectedBackup = value; if (restoring) InvalidateConfigPreview(); Notify(); CommandManager.InvalidateRequerySuggested(); }
     }
 
-    public MainViewModel()
+    public MainViewModel() : this(null, null, null) { }
+
+    // Only the separate development acceptance host can supply this scope.
+    // Normal App startup has no CLI, environment or imported-policy override.
+    internal MainViewModel(IVmxWritePolicy? candidatePolicy, string? constrainedTarget, IVmxBackupHistory? history)
     {
+        if (candidatePolicy is not null && (constrainedTarget is null || history is null))
+            throw new ArgumentException("Candidate acceptance requires an explicit target and private history.");
+        configurationTarget = constrainedTarget is null ? null : Path.GetFullPath(constrainedTarget);
+        configurationPolicy = candidatePolicy ?? new ReleasedVmxApiWritePolicy();
+        backupHistory = history ?? new LocalVmxBackupHistory(Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "VMIdentityLab", "configuration-history"));
         CollectCommand = new AsyncCommand(() => RunOperationAsync(async token =>
         {
             var progress = new Progress<CollectionProgress>(step => StatusText = $"{Localization.Text("Status.Collecting")} {step.Completed}/{step.Total}");
@@ -136,6 +149,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         OpenVmxCommand = new AsyncCommand(() => RunOperationAsync(OpenVmxAsync), () => !IsBusy);
         ReadPowerCommand = new AsyncCommand(() => RunOperationAsync(ReadPowerAsync), () => !IsBusy && currentVmxPath is not null);
         PreviewConfigCommand = new AsyncCommand(RunPreviewAsync, () => !IsBusy && currentVmx is not null);
+        PreviewIdentityConfigCommand = new AsyncCommand(RunIdentityPreviewAsync,
+            () => !IsBusy && currentVmxPath is not null && SelectedIdentityFieldIndex is 0 or 1);
         ReviewConfigCommand = new AsyncCommand(() => RunConfigOperationAsync(ReviewConfigAsync),
             () => !IsBusy && configPreview is not null && unsavedHistory is null);
         LoadHistoryCommand = new AsyncCommand(() => RunOperationAsync(LoadHistoryAsync), () => !IsBusy && currentVmxPath is not null);
@@ -146,6 +161,11 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ImportRightCommand = new AsyncCommand(() => RunOperationAsync(token => ImportAsync(true, token)), () => !IsBusy);
         ExportJsonCommand = new AsyncCommand(() => RunOperationAsync(token => ExportAsync(false, token)), () => !IsBusy && currentReport is not null);
         ExportHtmlCommand = new AsyncCommand(() => RunOperationAsync(token => ExportAsync(true, token)), () => !IsBusy && currentReport is not null);
+        PreviewExperimentCommand = new AsyncCommand(() => RunOperationAsync(PreviewExperimentAsync),
+            () => !IsBusy && currentVmxPath is not null && SelectedExperimentIndex is 0 or 1);
+        ExportExperimentCommand = new AsyncCommand(() => RunOperationAsync(ExportExperimentAsync),
+            () => !IsBusy && experimentPreview is not null && ExperimentReviewed);
+        InitializeValidation();
         Refresh();
     }
 
@@ -170,6 +190,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         if (dialog.ShowDialog(Application.Current.MainWindow) != true) return false;
         currentVmx = await Task.Run(() => new VmxReader().ReadAsync(dialog.FileName, token), token);
         currentVmxPath = dialog.FileName;
+        InvalidateExperimentPreview();
         if (unsavedHistory is null) RecoveryLocation = "";
         requestedMemory = currentVmx.Document.Entries.FirstOrDefault(item => item.Key.Equals("memsize", StringComparison.OrdinalIgnoreCase))?.Value ?? "";
         requestedCpu = currentVmx.Document.Entries.FirstOrDefault(item => item.Key.Equals("numvcpus", StringComparison.OrdinalIgnoreCase))?.Value ?? "";
@@ -187,6 +208,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         if (dialog.ShowDialog() != true) return false;
         using var client = CreateVmwareClient(dialog);
         currentVmx = await new VmxReader(new WorkstationRestPowerStateProbe(client)).ReadAsync(currentVmxPath!, token);
+        InvalidateExperimentPreview();
         InvalidateConfigPreview();
         if (currentReport is not null) currentReport = currentReport with { VmxSummary = currentVmx.Document.ToSummary(currentVmx.PowerState) };
         Refresh();
@@ -270,8 +292,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ConfigChanges.Clear();
         if (configPlan is not null)
             foreach (var change in configPlan.Changes)
-                ConfigChanges.Add(new(change.Key, change.Before + (change.Unit == "MiB" ? " MiB" : ""), change.After + (change.Unit == "MiB" ? " MiB" : ""),
-                    Localization.Text(change.Key == "memsize" ? "Config.MemoryImpact" : "Config.CpuImpact")));
+                ConfigChanges.Add(new(change.Key, ConfigPresentation.Value(change, false), ConfigPresentation.Value(change, true),
+                    ConfigPresentation.Impact(change)));
         Notify(nameof(ConfigNotice));
         CommandManager.InvalidateRequerySuggested();
     }
@@ -313,7 +335,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     {
         var preview = configPreview!;
         var isRestore = restoring;
-        var approved = VmxApiConfigManager.IsProductionWriteApproved(preview)
+        var approved = IsPreviewWriteApproved(preview)
             && WorkstationEnvironment.ReadInstalledVersion() == preview.WorkstationVersion
             && !VmxApiConfigManager.HasPendingOperation(preview.TargetPath);
         var confirmation = new ConfigConfirmationDialog(Application.Current.MainWindow, preview, isRestore, approved);
@@ -324,11 +346,12 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         }
         if (WorkstationEnvironment.ReadInstalledVersion() != preview.WorkstationVersion)
             throw new InvalidOperationException("Installed version changed; create a new preview.");
+        if (!IsPreviewWriteApproved(preview)) throw new InvalidOperationException("Configuration acceptance scope changed.");
         var connection = new VmwareConnectionDialog(Application.Current.MainWindow, forConfiguration: true);
         if (connection.ShowDialog() != true) return false;
         using var client = CreateVmwareClient(connection);
         var workflow = new VmxConfigWorkflow(new VmxApiConfigManager(new WorkstationRestClient(client),
-            WorkstationEnvironment.ReadInstalledVersion), backupHistory);
+            WorkstationEnvironment.ReadInstalledVersion, configurationPolicy), backupHistory);
         try
         {
             var entry = await workflow.ApplyAsync(preview, preview.Id, isRestore, token);
@@ -444,6 +467,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     private void Refresh()
     {
         RefreshConfigPreview();
+        RefreshExperimentPreview();
+        RefreshValidation();
         foreach (var row in BackupHistory) row.RefreshLanguage();
         Findings.Clear();
         if (currentReport is not null)

@@ -2,8 +2,8 @@ using System.Globalization;
 
 namespace VMIdentityLab.Core.Reports;
 
-public enum IdentityWriteSupport { NotSupported, ExistingLimitedPolicy, ResearchCandidate }
-public enum IdentityBasis { NoReviewedWriteEvidence, V02ExactRange, MacHistoricalKb, UuidWorkflowKb }
+public enum IdentityWriteSupport { NotSupported, ExistingLimitedPolicy }
+public enum IdentityBasis { NoReviewedWriteEvidence, V02ExactRange, M11MacExactRange, M11UuidExactRange }
 public enum DeclarationState { NotApplicable, NoSnapshot, NotIncluded, Present, Redacted, Ambiguous, Invalid }
 public sealed record IdentityDeclaration(DeclarationState State, FindingValue Value, string Source = "");
 public sealed record IdentityAnalysisRow(FindingDefinition Definition, Finding? Observation,
@@ -40,8 +40,8 @@ public static class IdentityAnalyzer
                 var (support, basis) = definition.Id switch
                 {
                     "cpu.logicalProcessors" or "system.memoryBytes" => (IdentityWriteSupport.ExistingLimitedPolicy, IdentityBasis.V02ExactRange),
-                    "network.macAddress" => (IdentityWriteSupport.ResearchCandidate, IdentityBasis.MacHistoricalKb),
-                    "smbios.uuid" => (IdentityWriteSupport.ResearchCandidate, IdentityBasis.UuidWorkflowKb),
+                    "network.macAddress" => (IdentityWriteSupport.ExistingLimitedPolicy, IdentityBasis.M11MacExactRange),
+                    "smbios.uuid" => (IdentityWriteSupport.ExistingLimitedPolicy, IdentityBasis.M11UuidExactRange),
                     _ => (IdentityWriteSupport.NotSupported, IdentityBasis.NoReviewedWriteEvidence)
                 };
                 return new IdentityAnalysisRow(definition, observations.GetValueOrDefault(definition.Id), declaration, support, basis);

@@ -6,9 +6,19 @@ VMware Workstation 虚拟化特征分析、兼容性诊断与配置管理工具�
 
 ## 当前开发
 
-当前源码为 **0.2.0-alpha.1**：官方API配置管理及实际App应用、退出重开历史、参数恢复闭环已通过，配置验收6/6，总计37/37。2026-10-17 Release零警告/错误、127单元/100模拟集成，以及最新包客户机普通权限/双语/报告/包内运行时十六项检查通过；[GitHub Actions](https://github.com/Aleka579/VMIL/actions/runs/39024064418)已在Windows托管环境实际通过，私密安全报告渠道已启用。配置仅支持登记版本17.5.2.23775571、hardware19、每插槽2核及4096↔6144MiB、2↔4vCPU；状态/内容冲突和未决结果保全已验证，不宣称全局VMware锁。源码已公开，尚未创建GitHub Release；范围见[全量测试与限制](docs/V02-FULL-TEST-RESULTS-2026-10-17.md)及[GitHub验收](docs/GITHUB-READINESS-2026-10-17.md)。
+当前源码为 **0.3.0-alpha.1 本地候选**，正在完成[M13复审修复与交付](docs/V03-M13-CLOSURE.md)，本版尚未推送或发布。[此前本地准备](docs/V03-M13-LOCAL-READINESS.md)保留原包来源；本轮修复后240单元/206模拟集成、资源/三阶段夹具77、原包CLI/PNG14及正常双语GUI43通过，新CI/最终CI原包目标验收仍待完成。已公开的 **0.2.0-alpha.1** 保持原内容。该[预发布](https://github.com/Aleka579/VMIL/releases/tag/v0.2.0-alpha.1)来源e27543f，[GitHub Actions](https://github.com/Aleka579/VMIL/actions/runs/39109350478)通过130单元/106模拟集成，原CI包客户机23/23，见[CPU修复及验收](docs/CPU-FIX-ACCEPTANCE-2026-10-18.md)与[发布记录](docs/GITHUB-RELEASE-v0.2.0-alpha.1.md)。旧37/37和配置数值范围不代表当前v0.3已发布。
 
-既有Alpha快照为 `artifacts/releases/VMIdentityLab-0.2.0-alpha.1-win-x64.zip`，来源9cfa28a，保留其只读范围及[原包验收](docs/V02-ACCEPTANCE-RESULTS-2026-10-14.md)，不包含最新后端。已验收的5de4ec4新本地验证包另存`artifacts/test-packages/VMIdentityLab-5de4ec4-validation-20261017.zip`及校验文件；未创建公开Release，历史包不覆盖。
+v0.3 的[完整计划](docs/V03-PLAN.md)与[M08 静态可行性调研](docs/V03-M08-FEASIBILITY.md)已完成；[M09 只读身份分析](docs/V03-M09-RESULTS.md)功能及声明环境补充验收完成：普通权限CLI默认14项/显式17项、双语GUI、[实际CI](https://github.com/Aleka579/VMIL/actions/runs/39196591655)140单元/113模拟集成、新原包宿主9/9和现有Win10客户机28/28通过。[验收记录](docs/V03-M09-CI-GUEST-ACCEPTANCE.md)分别保留首次PNG失败、局部修复、最终原包与清理。可选UUID/MAC/BIOS序列号默认不读取，选择后仍仅输出脱敏结果，报告保持1.0。M09尚未发布，已发布e27543f包不包含该功能；全新OS未验证，当时没有新增身份写入。
+
+[M10 实验计划与预览](docs/V03-M10-RESULTS.md)已在独立worktree完成5/5及本机合成验收：Release零警告/错误、164单元/115模拟集成、普通权限双语GUI20项通过。配置页可审阅MAC唯一性、UUID复制生命周期的意图、风险、恢复和准入缺口，导出脱敏计划JSON；候选不可执行，固定标记“计划未执行”，内容变化清除旧审阅。M10尚未推送或发布，不在e27543f资产中；本模块客户机/远程CI未测试。
+
+[M11实际App验收与有限准入](docs/V03-M11-APP-ACCEPTANCE.md)完成5/5：已有静态MAC/BIOS UUID各经App应用、退出重开历史、客户机核对、受控恢复和原值核对，客户机75/75、收据36/36通过。默认策略仅允许Workstation17.5.2.23775571/hardware19、已有有效两标识及单个静态hostonly且启动断开的网卡，一次一个字段；仍须可靠关机、明确确认、备份、intent和独立复核。该轮199单元/192集成、正常App双语确认8/8通过，副本删除、原VM恢复挂起；M12进展见下方，无新远程CI或Release。
+
+[M12三阶段身份验证](docs/V03-M12-REAL-ACCEPTANCE.md)已完成有限范围验收5/5，副本已删除、原VM恢复挂起。可显式保存私有MAC/UUID快照、选择网络接口GUID，导入前/后/恢复后三组输入及配对配置记录，分别查看配置、Windows观测与VMIL分类，导出脱敏JSON/HTML。237单元/200集成、六份真实客户机快照150/150、四收据36/36、宿主及Win10客户机双语/脱敏各34/34通过。分类仍保留VMware证据，联网未测试；私有快照不能公开上传，旧报告标识仍不可比较，M11写入范围不变；M13当前本地候选、CI和目标验收分别记录。
+
+[MAC/UUID官方补证](docs/V03-M11-MAC-UUID-EVIDENCE.md)、[精确构建研究](docs/V03-M11-REAL-API-RETEST.md)与上述App/客户机实测分别提供依据；[配置政策](docs/VMWARE-CONFIG-POLICY.md)明确值格式及恢复边界。其他构建、自动地址、联网/多网卡、缺失键、厂商生成/复制仍未准入。MAC/UUID改变后其他虚拟化证据仍在，不保证第三方程序将环境识别为物理机。
+
+历史本地 Alpha 快照 `artifacts/releases/VMIdentityLab-0.2.0-alpha.1-win-x64.zip` 来源9cfa28a，保留其只读范围及[原包验收](docs/V02-ACCEPTANCE-RESULTS-2026-10-14.md)；5de4ec4 本地验证包另存 `artifacts/test-packages/VMIdentityLab-5de4ec4-validation-20261017.zip`。它们与已公开的 e27543f 原 CI 包分别记录，不覆盖或重标历史包。
 
 ## v0.1 已有交付
 
@@ -24,7 +34,7 @@ VMware Workstation 虚拟化特征分析、兼容性诊断与配置管理工具�
 .\VMIdentityLab.App.exe --collect --output .\guest-report.json --html .\guest-report.html
 ```
 
-同一引擎在宿主机/客户机分别采集，手动传回 JSON 再导入比较。CLI 拒绝覆盖已有输出；GUI 明确确认后才替换已有报告。详见 [使用指南](docs/USER-GUIDE.md)。
+同一引擎在宿主机/客户机分别采集，手动传回 JSON 再导入比较。CLI 拒绝覆盖已有输出；GUI 明确确认后才替换已有报告。详见 [中文指南](docs/USER-GUIDE.md)与[英文指南](docs/USER-GUIDE.en.md)。
 
 ## 构建与测试
 
@@ -41,17 +51,19 @@ dotnet publish src/VMIdentityLab.App/VMIdentityLab.App.csproj -c Release -r win-
 
 ## 从这里开始
 
-- [完整计划](PLAN.md)：目标、版本、技术路线、阶段、授权与交付。
-- [模块开发顺序](docs/MODULES.md)：M00–M07 的职责、接口、依赖与验收归属。
+- [完整计划](PLAN.md)：原 v0.1/v0.2 路线；[v0.3 计划](docs/V03-PLAN.md)与[M08 结论](docs/V03-M08-FEASIBILITY.md)单列。
+- [模块开发顺序](docs/MODULES.md)：既有 M00–M07 及规划中 M08–M13 的职责、依赖与验收归属。
 - [Codex 总控指令](CODEX_START.md)：复制到新的开发任务时使用。
 - [阶段验收索引](tasks/PROGRESS.md)：37 条验收与证据入口。
 - [项目工作日志](WORK_LOG.md)：实际状态和本轮文件生成记录。
 - [项目指令](AGENTS.md)：恢复工作、测试、隐私和授权规则。
 - [发布就绪表](RELEASE-READINESS.md)：构建、测试和发布状态。
 
-## 两个版本
+## 版本路线
 
 v0.1 完成只读检测、VMX 查看、宿主机/客户机报告对比、脱敏 JSON/HTML 和 WPF 界面。v0.2 再加入版本明确、经过验证的有限配置管理。
+
+v0.3 已完成M08–M12对应范围验收：身份分析、未执行实验计划、已有MAC/UUID有限应用恢复及三阶段验证。M13先完成本地候选，实际CI、最终CI原包目标验收及发布仍待后续授权；新字段/版本仍须独立证据和恢复验证。
 
 客户机采集采用用户手动运行和报告导入；配置管理要求可靠确认完全关机，并先在独立副本测试。
 
@@ -74,9 +86,9 @@ v0.1 完成只读检测、VMX 查看、宿主机/客户机报告对比、脱敏 
 
 客户机允许Windows 10/11 x64，VMware最低17.5.2，属于用户指定的测试兼容基线；官方支持与实测兼容分别记录。其他SDK、脚本工具、依赖和CI继续核查维护期，临期版本不作为新采用方案。
 
-宿主机OS版本不设门槛。SDK10.0.401、Runtime10.0.12、VMware17.5.2与项目内Python3.14.8/MCP SDK1.30.0保留；7个读取工具已接入。最新5de验证包客户机和无需SDK/系统.NET目标、精确有限配置范围均已验收；该客户机已有其他软件，非全新OS。旧包与各日期证据保留原范围，云端CI与私密渠道已通过[GitHub验收](docs/GITHUB-READINESS-2026-10-17.md)。安全问题请使用[私密报告入口](https://github.com/Aleka579/VMIL/security/advisories/new)，维护者Daniel Waltz。
+宿主机OS版本不设门槛。最终 e27543f CI 包使用 SDK10.0.402/Runtime10.0.13；VMware17.5.2、项目内Python3.14.8/MCP SDK1.30.0及7个读取工具的既有记录保留。当前包在 Win10 教育版18363 x64 的无需SDK/系统.NET目标通过；该客户机已有其他软件，非全新OS，Win11及其他构建尚未验证。精确有限配置实测与旧包保留各自范围，见[兼容性](docs/COMPATIBILITY.md)。安全问题请使用[私密报告入口](https://github.com/Aleka579/VMIL/security/advisories/new)，维护者Daniel Waltz。
 
 ## 许可与开源准备
 
-原创源码采用 [MIT](LICENSE)，Copyright (c) 2026 Daniel Waltz，已由用户确认。第三方声明见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。安全报告渠道仍待配置；正式就绪程度以 [RELEASE-READINESS.md](RELEASE-READINESS.md) 为准。
+原创源码采用 [MIT](LICENSE)，Copyright (c) 2026 Daniel Waltz，已由用户确认。第三方声明见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。[私密安全报告渠道](https://github.com/Aleka579/VMIL/security/advisories/new)已开启，由Daniel Waltz维护；正式就绪程度以 [RELEASE-READINESS.md](RELEASE-READINESS.md) 为准。
 

@@ -8,7 +8,7 @@ using VMIdentityLab.VMware.Configuration;
 
 namespace VMIdentityLab.IntegrationTests;
 
-public sealed class ApiConfigurationTests
+public sealed partial class ApiConfigurationTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
     private static readonly Version Version = new(17, 5, 2, 23775571);
@@ -436,8 +436,9 @@ public sealed class ApiConfigurationTests
         private readonly HttpClient client;
         public WorkstationRestClient Api { get; }
         public Files Files { get; } = new();
-        public Fixture()
+        public Fixture(byte[]? original = null)
         {
+            if (original is not null) Original = original;
             Directory.CreateDirectory(Folder);
             File.WriteAllBytes(Path, Original);
             Server = new(Path);
@@ -485,7 +486,7 @@ public sealed class ApiConfigurationTests
         public void Replace(string temporaryPath, string targetPath, string replacedBackupPath)
         { ReplaceCount++; throw new InvalidOperationException("API transactions must never replace VMX files."); }
     }
-    private sealed class Server(string path) : HttpMessageHandler
+    private sealed partial class Server(string path) : HttpMessageHandler
     {
         public string Id { get; set; } = "test-vm";
         public string Power { get; set; } = "poweredOff";
@@ -517,6 +518,8 @@ public sealed class ApiConfigurationTests
                 OnPower?.Invoke(++powers);
                 return Reply(new { power_state = Power });
             }
+            if (request.Method == HttpMethod.Get && request.RequestUri.AbsolutePath.StartsWith("/api/vms/test-vm/params/", StringComparison.Ordinal))
+                return IdentitySetting(request.RequestUri.AbsolutePath);
             if (request.Method == HttpMethod.Get) return Settings();
             Assert.Equal(HttpMethod.Put, request.Method);
             PutCount++;
@@ -526,6 +529,7 @@ public sealed class ApiConfigurationTests
             EnteredPut.TrySetResult();
             if (HoldPut) await ReleasePut.Task.WaitAsync(cancellationToken);
             if (RejectPut is not null) return Reply(new { message = "synthetic rejection" }, RejectPut.Value);
+            if (request.RequestUri.AbsolutePath == "/api/vms/test-vm/params") return await UpdateIdentityAsync(request, cancellationToken);
             var changes = JsonSerializer.Deserialize<Dictionary<string, int>>(await request.Content!.ReadAsStringAsync(cancellationToken))!;
             Assert.All(changes.Keys, key => Assert.True(key is "memory" or "processors"));
             var numeric = changes.ToDictionary(item => item.Key == "memory" ? "memsize" : "numvcpus", item => item.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));

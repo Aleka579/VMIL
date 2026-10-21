@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>System.Management</id>
-    <version>10.0.12</version>
+    <version>10.0.13</version>
     <authors>Microsoft</authors>
     <license type="expression">MIT</license>
     <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
@@ -18,19 +18,19 @@ System.Management.SelectQuery</description>
     <releaseNotes>https://go.microsoft.com/fwlink/?LinkID=799421</releaseNotes>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <serviceable>true</serviceable>
-    <repository type="git" url="https://github.com/dotnet/dotnet" commit="95017c711e6afc1085133d440e42b4bd78155701" />
+    <repository type="git" url="https://github.com/dotnet/dotnet" commit="4099f83977f4d29604a9aeb971fb0a7bc1d5f699" />
     <dependencies>
       <group targetFramework="net8.0">
-        <dependency id="System.CodeDom" version="10.0.12" exclude="Build,Analyzers" />
+        <dependency id="System.CodeDom" version="10.0.13" exclude="Build,Analyzers" />
       </group>
       <group targetFramework="net9.0">
-        <dependency id="System.CodeDom" version="10.0.12" exclude="Build,Analyzers" />
+        <dependency id="System.CodeDom" version="10.0.13" exclude="Build,Analyzers" />
       </group>
       <group targetFramework="net10.0">
-        <dependency id="System.CodeDom" version="10.0.12" exclude="Build,Analyzers" />
+        <dependency id="System.CodeDom" version="10.0.13" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETStandard2.0">
-        <dependency id="System.CodeDom" version="10.0.12" exclude="Build,Analyzers" />
+        <dependency id="System.CodeDom" version="10.0.13" exclude="Build,Analyzers" />
       </group>
     </dependencies>
     <frameworkAssemblies>

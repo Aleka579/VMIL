@@ -4,6 +4,7 @@ using System.Security.Principal;
 using VMIdentityLab.App.Infrastructure;
 using VMIdentityLab.App.ViewModels;
 using VMIdentityLab.Core.Reports;
+using VMIdentityLab.Core.Comparison;
 using VMIdentityLab.VMware;
 using VMIdentityLab.Windows;
 
@@ -27,6 +28,33 @@ public partial class App : Application
             {
                 Console.WriteLine("VMIdentityLab --collect --output report.json [--html report.html] [--vmx selected.vmx] [--include-identifiers]");
                 Console.WriteLine("Identifiers are not read by default. Explicitly requested identifiers remain redacted in all reports.");
+                Console.WriteLine("PRIVATE capture: --capture-private-validation --session GUID --phase before|after|restored --output NEW.json [--adapter INTERFACE_GUID]");
+                Console.WriteLine("Private validation captures contain raw MAC/UUID. Keep them private; public validation exports are separate.");
+                Shutdown(0);
+                return;
+            }
+            if (e.Args is ["--capture-private-validation", ..])
+            {
+                var (sessionText, phaseText, output, adapterText) = e.Args switch
+                {
+                    ["--capture-private-validation", "--session", var s, "--phase", var p, "--output", var o] => (s, p, o, (string?)null),
+                    ["--capture-private-validation", "--session", var s, "--phase", var p, "--output", var o, "--adapter", var a] => (s, p, o, a),
+                    _ => throw new ArgumentException("Use an explicit session, phase, new JSON output and optional interface GUID.")
+                };
+                if (!Guid.TryParse(sessionText, out var session) || session == Guid.Empty || phaseText is not ("before" or "after" or "restored"))
+                    throw new ArgumentException("An explicit session and before/after/restored phase are required.");
+                Guid? networkAdapterId = null;
+                if (adapterText is not null)
+                {
+                    if (!Guid.TryParse(adapterText, out var adapter) || adapter == Guid.Empty) throw new ArgumentException("Select a valid interface GUID.");
+                    networkAdapterId = adapter;
+                }
+                var phase = Enum.Parse<ValidationPhase>(phaseText, ignoreCase: true);
+                if (!Path.GetExtension(output).Equals(".json", StringComparison.OrdinalIgnoreCase)
+                    || File.Exists(output) || Directory.Exists(output)) throw new IOException("Select a new private JSON output.");
+                var snapshot = await new WindowsValidationCollector().CapturePrivateAsync(session, phase, networkAdapterId: networkAdapterId);
+                await ValidationSnapshotJson.SavePrivateAsync(output, snapshot);
+                DiagnosticLog.Write("privateValidation", "completed", "privateSnapshot", snapshot.Identities.Count, snapshot.Elevated);
                 Shutdown(0);
                 return;
             }

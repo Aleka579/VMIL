@@ -122,8 +122,8 @@
                 </TabItem>
                 </TabControl>
             </Grid>
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding SelectedPage, Converter={StaticResource PageVisibility}, ConverterParameter=2}"><Grid>
-                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+            <ScrollViewer x:Name="ConfigurationScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding SelectedPage, Converter={StaticResource PageVisibility}, ConverterParameter=2}"><Grid>
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                 <TextBlock Text="{DynamicResource Configuration.Description}" Style="{StaticResource Muted}" Margin="0,0,0,18" />
                 <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,18"><StackPanel><TextBlock Text="{Binding VmxStateText}" FontWeight="SemiBold" FontSize="19" Margin="0,0,0,8" /><TextBlock Text="{Binding VmxNotice}" Style="{StaticResource Muted}" /><Button Content="{DynamicResource Action.ReadPower}" Command="{Binding ReadPowerCommand}" HorizontalAlignment="Left" Margin="0,12,0,0" /></StackPanel></Border>
                 <Border Grid.Row="2" Style="{StaticResource Card}" Margin="0,0,0,18">
@@ -138,7 +138,15 @@
                             <TextBox x:Name="CandidateCpu" Grid.Column="3" Text="{Binding RequestedCpu, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" Padding="7,5" Margin="0,0,18,0" />
                             <Button Grid.Column="4" Content="{DynamicResource Config.Preview}" Command="{Binding PreviewConfigCommand}" Margin="0" />
                         </Grid>
-                        <DataGrid x:Name="ConfigPreviewTable" ItemsSource="{Binding ConfigChanges}" MaxHeight="120">
+                        <TextBlock Text="{Binding IdentityConfigScope}" Style="{StaticResource Muted}" Margin="0,0,0,10" />
+                        <WrapPanel Margin="0,0,0,12">
+                            <ComboBox x:Name="IdentityConfigSelector" SelectedIndex="{Binding SelectedIdentityFieldIndex}" IsEnabled="{Binding CanChooseIdentifiers}" MinWidth="230" Padding="7,5" Margin="0,0,12,8">
+                                <ComboBoxItem Content="{DynamicResource IdentityConfig.Mac}" />
+                                <ComboBoxItem Content="{DynamicResource IdentityConfig.Uuid}" />
+                            </ComboBox>
+                            <Button x:Name="PreviewIdentityConfigButton" Content="{DynamicResource IdentityConfig.Generate}" Command="{Binding PreviewIdentityConfigCommand}" Margin="0,0,0,8" />
+                        </WrapPanel>
+                        <DataGrid x:Name="ConfigPreviewTable" ItemsSource="{Binding ConfigChanges}" MaxHeight="180">
                             <DataGrid.RowStyle><Style TargetType="DataGridRow"><Setter Property="ToolTip" Value="{Binding Impact}" /></Style></DataGrid.RowStyle>
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="{DynamicResource Column.Key}" Binding="{Binding Key}" Width="150" />
@@ -151,7 +159,44 @@
                         <TextBlock Text="{Binding UnsavedHistoryWarning}" Style="{StaticResource Muted}" Margin="0,8,0,0" />
                     </StackPanel>
                 </Border>
-                <Expander x:Name="BackupHistoryExpander" Grid.Row="3" Header="{DynamicResource History.Title}" Margin="0,0,0,12">
+                <Expander x:Name="IdentityExperimentExpander" Grid.Row="3" Header="{DynamicResource Experiment.Title}" Margin="0,0,0,18">
+                    <Border Style="{StaticResource Card}" Margin="0,10,0,0"><StackPanel>
+                        <TextBlock Text="{DynamicResource Experiment.Description}" Style="{StaticResource Muted}" Margin="0,0,0,12" />
+                        <WrapPanel Margin="0,0,0,12">
+                            <ComboBox x:Name="ExperimentSelector" SelectedIndex="{Binding SelectedExperimentIndex}" IsEnabled="{Binding CanChooseExperiment}" MinWidth="230" Padding="7,5" Margin="0,0,12,8">
+                                <ComboBoxItem Content="{DynamicResource Experiment.Mac}" />
+                                <ComboBoxItem Content="{DynamicResource Experiment.Uuid}" />
+                            </ComboBox>
+                            <Button x:Name="PreviewExperimentButton" Content="{DynamicResource Experiment.Preview}" Command="{Binding PreviewExperimentCommand}" Margin="0,0,0,8" />
+                        </WrapPanel>
+                        <TextBlock x:Name="ExperimentNotice" Text="{Binding ExperimentNotice}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,12" />
+                        <TextBlock Text="{DynamicResource Experiment.Target}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ExperimentTarget}" Style="{StaticResource Muted}" Margin="0,4,0,12" />
+                        <DataGrid x:Name="ExperimentChangesTable" ItemsSource="{Binding ExperimentChanges}" MaxHeight="160" RowHeight="72" Margin="0,0,0,12">
+                            <DataGrid.Resources><Style x:Key="ExperimentCellText" TargetType="TextBlock" BasedOn="{StaticResource CellText}"><Setter Property="TextWrapping" Value="Wrap" /><Setter Property="TextTrimming" Value="None" /></Style></DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource Column.Name}" Binding="{Binding Key}" Width="160" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{DynamicResource Config.Before}" Binding="{Binding Before}" Width="150" ElementStyle="{StaticResource CellText}" />
+                                <DataGridTextColumn Header="{DynamicResource Experiment.Intent}" Binding="{Binding After}" Width="*" ElementStyle="{StaticResource ExperimentCellText}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock Text="{DynamicResource Experiment.Basis}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ExperimentBasis}" Style="{StaticResource Muted}" Margin="0,4,0,12" />
+                        <TextBlock Text="{DynamicResource Experiment.Constraints}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ExperimentConstraints}" Style="{StaticResource Muted}" Margin="0,4,0,12" />
+                        <TextBlock Text="{DynamicResource Experiment.Risk}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ExperimentRisk}" Style="{StaticResource Muted}" Margin="0,4,0,12" />
+                        <TextBlock Text="{DynamicResource Experiment.Recovery}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ExperimentRecovery}" Style="{StaticResource Muted}" Margin="0,4,0,12" />
+                        <TextBlock Text="{DynamicResource Experiment.Gaps}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ExperimentGaps}" Style="{StaticResource Muted}" Margin="0,4,0,12" />
+                        <CheckBox x:Name="ExperimentReviewCheckBox" IsChecked="{Binding ExperimentReviewed}" IsEnabled="{Binding CanReviewExperiment}" Margin="0,0,0,12">
+                            <TextBlock Text="{DynamicResource Experiment.Review}" TextWrapping="Wrap" />
+                        </CheckBox>
+                        <Button x:Name="ExportExperimentButton" Content="{DynamicResource Experiment.Export}" Command="{Binding ExportExperimentCommand}" HorizontalAlignment="Left" Margin="0" />
+                    </StackPanel></Border>
+                </Expander>
+                <Expander x:Name="BackupHistoryExpander" Grid.Row="4" Header="{DynamicResource History.Title}" Margin="0,0,0,12">
                     <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="{Binding HistoryNotice}" Style="{StaticResource Muted}" Margin="0,0,0,8" />
                         <DataGrid x:Name="BackupHistoryTable" ItemsSource="{Binding BackupHistory}" SelectedItem="{Binding SelectedBackup}" MaxHeight="120">
@@ -171,13 +216,14 @@
                         <TextBox Text="{Binding RecoveryLocation, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="65" />
                     </StackPanel>
                 </Expander>
-                <Border Grid.Row="4" Style="{StaticResource Card}" Padding="0"><DataGrid x:Name="VmxTable" ItemsSource="{Binding VmxRows}" MaxHeight="280"><DataGrid.Columns>
+                <Border Grid.Row="5" Style="{StaticResource Card}" Padding="0"><DataGrid x:Name="VmxTable" ItemsSource="{Binding VmxRows}" MaxHeight="280"><DataGrid.Columns>
                     <DataGridTextColumn Header="{DynamicResource Column.Key}" Binding="{Binding Key}" Width="230" ElementStyle="{StaticResource CellText}" />
                     <DataGridTextColumn Header="{DynamicResource Column.Value}" Binding="{Binding Value}" Width="*" ElementStyle="{StaticResource CellText}" />
                     <DataGridTextColumn Header="{DynamicResource Column.Support}" Binding="{Binding Support}" Width="280" ElementStyle="{StaticResource CellText}" />
                 </DataGrid.Columns></DataGrid></Border>
             </Grid></ScrollViewer>
-            <Grid Grid.Row="1" Visibility="{Binding SelectedPage, Converter={StaticResource PageVisibility}, ConverterParameter=3}">
+            <TabControl Grid.Row="1" Visibility="{Binding SelectedPage, Converter={StaticResource PageVisibility}, ConverterParameter=3}">
+            <TabItem Header="{DynamicResource Validation.TwoReports}"><Grid>
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                 <TextBlock Text="{DynamicResource Comparison.Description}" Style="{StaticResource Muted}" Margin="0,0,0,18" />
                 <Grid Grid.Row="1" Margin="0,0,0,18"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
@@ -191,13 +237,71 @@
                     <DataGridTextColumn Header="{DynamicResource Column.Result}" Binding="{Binding Result}" Width="130" ElementStyle="{StaticResource CellText}" />
                     <DataGridTextColumn Header="{DynamicResource Column.Reason}" Binding="{Binding Reason}" Width="160" ElementStyle="{StaticResource CellText}" />
                 </DataGrid.Columns></DataGrid></Border>
-            </Grid>
+            </Grid></TabItem>
+            <TabItem x:Name="IdentityValidationTab" Header="{DynamicResource Validation.Title}">
+                <ScrollViewer x:Name="ValidationScroll" VerticalScrollBarVisibility="Auto"><StackPanel Margin="0,12,0,0">
+                    <TextBlock Text="{DynamicResource Validation.Description}" Style="{StaticResource Muted}" Margin="0,0,0,12" />
+                    <TextBlock Text="{Binding ValidationNotice}" Style="{StaticResource Muted}" Margin="0,0,0,12" />
+                    <ComboBox x:Name="ValidationFieldSelector" SelectedIndex="{Binding SelectedValidationFieldIndex}" IsEnabled="{Binding CanChooseIdentifiers}" HorizontalAlignment="Left" MinWidth="240" Margin="0,0,0,12">
+                        <ComboBoxItem Content="{DynamicResource IdentityConfig.Mac}" /><ComboBoxItem Content="{DynamicResource IdentityConfig.Uuid}" />
+                    </ComboBox>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12"><StackPanel>
+                        <Button Content="{DynamicResource Validation.ImportBefore}" Command="{Binding ImportValidationBeforeCommand}" HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding ValidationBeforeText}" Style="{StaticResource Muted}" Margin="0,4,0,8" />
+                        <Button Content="{DynamicResource Validation.ImportAfter}" Command="{Binding ImportValidationAfterCommand}" HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding ValidationAfterText}" Style="{StaticResource Muted}" Margin="0,4,0,8" />
+                        <Button Content="{DynamicResource Validation.ImportRestored}" Command="{Binding ImportValidationRestoredCommand}" HorizontalAlignment="Left" />
+                        <TextBlock Text="{Binding ValidationRestoredText}" Style="{StaticResource Muted}" />
+                    </StackPanel></Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,12"><StackPanel>
+                        <TextBlock Text="{DynamicResource Validation.RecordNote}" Style="{StaticResource Muted}" Margin="0,0,0,8" />
+                        <WrapPanel><Button Content="{DynamicResource Validation.ApplyRecord}" Command="{Binding ImportValidationApplyCommand}" />
+                            <Button Content="{DynamicResource Validation.RestoreRecord}" Command="{Binding ImportValidationRestoreCommand}" /></WrapPanel>
+                        <TextBlock Text="{Binding ValidationRecordsText}" Style="{StaticResource Muted}" />
+                    </StackPanel></Border>
+                    <Border Style="{StaticResource Card}" Padding="0" Margin="0,0,0,12"><DataGrid x:Name="ValidationChecksTable" ItemsSource="{Binding ValidationChecks}" MaxHeight="400"><DataGrid.Columns>
+                        <DataGridTextColumn Header="{DynamicResource Validation.Layer}" Binding="{Binding Layer}" Width="130" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{DynamicResource Column.Name}" Binding="{Binding Check}" Width="155" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{DynamicResource Column.Result}" Binding="{Binding State}" Width="100" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{DynamicResource Column.Reason}" Binding="{Binding Reason}" Width="*" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{DynamicResource Validation.Before}" Binding="{Binding Before}" Width="88" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{DynamicResource Validation.After}" Binding="{Binding After}" Width="88" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{DynamicResource Validation.Restored}" Binding="{Binding Restored}" Width="88" ElementStyle="{StaticResource CellText}" />
+                    </DataGrid.Columns></DataGrid></Border>
+                    <TextBlock Text="{DynamicResource Validation.ProgramNote}" Style="{StaticResource Muted}" Margin="0,0,0,8" />
+                    <Border Style="{StaticResource Card}" Padding="0" Margin="0,0,0,12"><DataGrid x:Name="ValidationProgramTable" ItemsSource="{Binding ValidationProgram}"><DataGrid.Columns>
+                        <DataGridTextColumn Header="{DynamicResource Validation.Phase}" Binding="{Binding Phase}" Width="120" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{DynamicResource Validation.Time}" Binding="{Binding Time}" Width="220" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="{DynamicResource Validation.Program}" Binding="{Binding Evidence}" Width="*" ElementStyle="{StaticResource CellText}" />
+                        <DataGridTextColumn Header="Hypervisor" Binding="{Binding Hypervisor}" Width="120" ElementStyle="{StaticResource CellText}" />
+                    </DataGrid.Columns></DataGrid></Border>
+                    <WrapPanel Margin="0,0,0,14">
+                        <Button Content="{DynamicResource Validation.ExportJson}" Command="{Binding ExportValidationJsonCommand}" />
+                        <Button Content="{DynamicResource Validation.ExportHtml}" Command="{Binding ExportValidationHtmlCommand}" />
+                        <Button Content="{DynamicResource Validation.Clear}" Command="{Binding ClearValidationCommand}" />
+                    </WrapPanel>
+                    <Expander x:Name="ValidationCaptureExpander" Header="{DynamicResource Validation.Capture}"><StackPanel Margin="0,12,0,0">
+                        <TextBlock Text="{DynamicResource Validation.CaptureNote}" Style="{StaticResource Muted}" />
+                        <TextBlock Text="{DynamicResource Validation.Session}" Margin="0,10,0,4" />
+                        <TextBox x:Name="ValidationSessionInput" Text="{Binding ValidationSession, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CanChooseIdentifiers}" />
+                        <TextBlock Text="{DynamicResource Validation.Adapter}" Margin="0,10,0,4" />
+                        <TextBox x:Name="ValidationAdapterInput" Text="{Binding ValidationAdapter, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CanChooseIdentifiers}" />
+                        <TextBlock Text="{DynamicResource Validation.AdapterNote}" Style="{StaticResource Muted}" Margin="0,4,0,4" />
+                        <ComboBox x:Name="ValidationCapturePhase" SelectedIndex="{Binding SelectedValidationCapturePhase}" IsEnabled="{Binding CanChooseIdentifiers}" Margin="0,8,0,8">
+                            <ComboBoxItem Content="{DynamicResource Validation.Before}" /><ComboBoxItem Content="{DynamicResource Validation.After}" /><ComboBoxItem Content="{DynamicResource Validation.Restored}" />
+                        </ComboBox>
+                        <Button Content="{DynamicResource Validation.Capture}" Command="{Binding CapturePrivateValidationCommand}" HorizontalAlignment="Left" />
+                    </StackPanel></Expander>
+                </StackPanel></ScrollViewer>
+            </TabItem>
+            </TabControl>
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding SelectedPage, Converter={StaticResource PageVisibility}, ConverterParameter=4}">
                 <StackPanel>
                     <TextBlock Text="{DynamicResource Reports.Description}" Style="{StaticResource Muted}" Margin="0,0,0,22" />
                     <Border Style="{StaticResource Card}" Margin="0,0,0,18"><StackPanel><TextBlock Text="{DynamicResource Reports.Format}" FontWeight="SemiBold" FontSize="18" Margin="0,0,0,10" /><TextBlock Text="{Binding ReportDetails}" Style="{StaticResource Muted}" /></StackPanel></Border>
                     <Border Style="{StaticResource Card}" Margin="0,0,0,18"><StackPanel><TextBlock Text="{DynamicResource Reports.Json}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14" /><Button Content="{DynamicResource Action.ExportJson}" Command="{Binding ExportJsonCommand}" Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" /></StackPanel></Border>
                     <Border Style="{StaticResource Card}" Margin="0,0,0,18"><StackPanel><TextBlock Text="{DynamicResource Reports.Html}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,14" /><Button Content="{DynamicResource Action.ExportHtml}" Command="{Binding ExportHtmlCommand}" HorizontalAlignment="Left" /></StackPanel></Border>
+                    <Border Style="{StaticResource Card}" Margin="0,0,0,18"><StackPanel><TextBlock Text="{DynamicResource Experiment.Title}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10" /><TextBlock Text="{DynamicResource Experiment.ReportNote}" Style="{StaticResource Muted}" Margin="0,0,0,12" /><Button Content="{DynamicResource Experiment.Export}" Command="{Binding ExportExperimentCommand}" HorizontalAlignment="Left" /></StackPanel></Border>
                     <Border Style="{StaticResource Card}"><StackPanel><TextBlock Text="{DynamicResource Reports.Privacy}" FontWeight="SemiBold" Margin="0,0,0,10" /><TextBlock Text="{DynamicResource Reports.PrivacyText}" Style="{StaticResource Muted}" /></StackPanel></Border>
                 </StackPanel>
             </ScrollViewer>

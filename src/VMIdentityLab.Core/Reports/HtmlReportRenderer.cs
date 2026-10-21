@@ -46,8 +46,8 @@ public static class HtmlReportRenderer
             var support = row.Basis switch
             {
                 IdentityBasis.V02ExactRange => "既有精确范围策略：17.5.2.23775571/HW19/每插槽2核，4096↔6144 MiB、2↔4 vCPU；仍须通过原有检查。",
-                IdentityBasis.MacHistoricalKb => "研究候选，未批准写入：KB324973，旧版 hosted 产品资料；目标版本与恢复未验证。",
-                IdentityBasis.UuidWorkflowKb => "研究候选，未批准写入：KB320246，复制/迁移流程；产品/版本范围混合，非任意 UUID setter。",
+                IdentityBasis.M11MacExactRange => "M11有限策略：Workstation 17手册238页；仅实测17.5.2.23775571/vmrest1.3.1.23775571/HW19，单张静态hostonly且启动断开的网卡。已有MAC单键应用、原值恢复及客户机核对通过；不支持自动地址转换、多网卡。实际写入仍须通过目标及状态检查和明确确认。",
+                IdentityBasis.M11UuidExactRange => "M11有限策略：Workstation 17手册160–161页；仅实测17.5.2.23775571/vmrest1.3.1.23775571/HW19，单张静态hostonly且启动断开的网卡。已有BIOS UUID单键应用、原值恢复及客户机核对通过；不支持缺失键或生成/复制流程，配置恢复不含NVRAM/客户机状态。实际写入仍须通过目标及状态检查和明确确认。",
                 _ => "当前不支持修改：M08 尚无逐字段目标版本官方修改与恢复依据。"
             };
             html.Append("<tr><td>").Append(Encode(FindingCatalog.Title(row.Definition.Id))).Append("</td><td>")

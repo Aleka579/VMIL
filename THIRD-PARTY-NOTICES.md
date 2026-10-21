@@ -2,7 +2,11 @@
 
 原创源码采用 [MIT](LICENSE)，Copyright (c) 2026 Daniel Waltz。第三方文件保留自己的版权、许可和声明，原创 LICENSE 不替代它们。
 
-## 本地验收包实际应用依赖
+## 当前0.3.0-alpha.1候选
+
+M13自包含NETCore/WindowsDesktop、System.Management及传递System.CodeDom均为10.0.13。实际官方NuGet元数据/许可和共享声明的正文核对结果（仅换行差异）见[M13记录](docs/V03-M13-LOCAL-READINESS.md)；随包保留去重后的完整第三方声明及对应组件MIT/nuspec。旧10.0.12表保留历史包身份，不代表新包版本。SDK、xUnit/测试平台、Python/PowerShell/Git、测试驱动和VMware不随产品分发；新包实际依赖由deps/runtimeconfig/BUILD-INFO记录。
+
+## 历史本地验收包实际应用依赖
 
 | 组件 | 实际版本 | 来源/许可证据 | 随包材料 |
 | --- | --- | --- | --- |
@@ -35,4 +39,4 @@ GitHub Action 来自官方 checkout v7.0.1、setup-dotnet v6.0.0、upload-artifa
 - [xUnit v3 4.0.1 发布说明](https://xunit.net/releases/v3/4.0.1)
 - [xUnit 包与许可证](https://www.nuget.org/packages/xunit.v3/4.0.1)
 
-初始核查日期：2026-10-09；CI实际补丁与许可复核：2026-10-17。源码已公开、CI通过，尚未创建GitHub Release；实际发布仍按具体包重新核对版本、补丁与官方声明。
+初始核查日期：2026-10-09；旧CI实际补丁与许可复核：2026-10-17；v0.2.0-alpha.1已于2026-10-18公开预发布。M13本版尚未远程CI或发布；实际发布仍按具体包核对版本、维护补丁与官方声明。

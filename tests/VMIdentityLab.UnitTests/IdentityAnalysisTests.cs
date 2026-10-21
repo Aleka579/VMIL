@@ -8,14 +8,40 @@ namespace VMIdentityLab.UnitTests;
 public sealed class IdentityAnalysisTests
 {
     [Fact]
-    public void MissingObservationsStayUncollectedAndCandidatesDoNotBecomeWritable()
+    public void MissingObservationsStayUncollectedAndSupportDescribesFiniteProjectCapability()
     {
         var rows = IdentityAnalyzer.Analyze(null);
         Assert.Equal(17, rows.Count);
         Assert.All(rows, row => Assert.Null(row.Observation));
-        Assert.Equal(IdentityWriteSupport.ResearchCandidate, rows.Single(row => row.Definition.Id == "smbios.uuid").WriteSupport);
-        Assert.Equal(IdentityWriteSupport.NotSupported, rows.Single(row => row.Definition.Id == "cpu.hypervisorPresent").WriteSupport);
+        Assert.All(rows.Where(row => row.Definition.Id is not ("network.macAddress" or "smbios.uuid" or "cpu.logicalProcessors" or "system.memoryBytes")),
+            row => Assert.Equal(IdentityWriteSupport.NotSupported, row.WriteSupport));
         Assert.Equal(DeclarationState.NoSnapshot, rows.Single(row => row.Definition.Id == "system.memoryBytes").Declaration.State);
+    }
+
+    [Theory]
+    [InlineData("network.macAddress", IdentityBasis.M11MacExactRange)]
+    [InlineData("smbios.uuid", IdentityBasis.M11UuidExactRange)]
+    public void IdentityCapabilityUsesM11EvidenceWithoutInventingAnObservationOrTargetApproval(string id, IdentityBasis basis)
+    {
+        var row = IdentityAnalyzer.Analyze(null).Single(row => row.Definition.Id == id);
+        Assert.Equal(IdentityWriteSupport.ExistingLimitedPolicy, row.WriteSupport);
+        Assert.Equal(basis, row.Basis);
+        Assert.Null(row.Observation);
+        Assert.Equal(DeclarationState.NoSnapshot, row.Declaration.State);
+        Assert.Equal(ValueKind.Unknown, row.Declaration.Value.Kind);
+    }
+
+    [Fact]
+    public void HtmlUsesCurrentFiniteIdentityEvidenceAndKeepsTargetPermissionSeparate()
+    {
+        var html = HtmlReportRenderer.Render(ReportSamples.Report());
+        Assert.Contains("17.5.2.23775571/vmrest1.3.1.23775571/HW19", html);
+        Assert.Contains("手册238页", html);
+        Assert.Contains("手册160–161页", html);
+        Assert.Contains("不能当作当前目标的写入许可", html);
+        Assert.Contains("不支持缺失键或生成/复制流程", html);
+        Assert.DoesNotContain("研究候选，未批准写入", html);
+        Assert.DoesNotContain("目标版本与恢复未验证", html);
     }
 
     [Fact]

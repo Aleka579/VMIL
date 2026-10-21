@@ -31,7 +31,7 @@ public static class VmxIdentityReader
         }
     }
 
-    private static bool IsMacKey(string key)
+    internal static bool IsMacKey(string key)
     {
         var parts = key.Split('.');
         return parts.Length == 2 && parts[0].StartsWith("ethernet", StringComparison.OrdinalIgnoreCase)

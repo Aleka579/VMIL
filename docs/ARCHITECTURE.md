@@ -1,6 +1,6 @@
 # 架构设计
 
-状态：按 [MODULES.md](MODULES.md) 的八个功能模块在四层项目内实现；基础工程与报告模块已开始实际验证。阶段结果见 [PROGRESS.md](../tasks/PROGRESS.md)，需求入口为 [REQUIREMENTS.md](REQUIREMENTS.md)。
+状态：既有M00–M07在四层实现，v0.2有限范围验收并预发布；v0.3的M08/M09、M10及M11有限身份事务已完成各自验收。[M12](V03-M12-REAL-ACCEPTANCE.md)有限范围验收5/5，原VM恢复挂起、副本及临时会话已清理，[M13本地准备](V03-M13-LOCAL-READINESS.md)完成，源码0.3.0-alpha.1、完整交付2/5，新CI/最终原包目标验收/发布未执行。沿用四个源码项目，状态见[PROGRESS.md](../tasks/PROGRESS.md)，需求见[REQUIREMENTS.md](REQUIREMENTS.md)。
 
 ## 分层
 
@@ -23,6 +23,20 @@
 - ConfigManager：验证规则、生成预览、备份、应用和受控恢复。
 
 以上是实现职责，不要求引入插件系统、服务端或额外框架。
+
+## v0.3 规划边界
+
+M11最新有限实现与实测见[V03-M11-APP-ACCEPTANCE.md](V03-M11-APP-ACCEPTANCE.md)，当前已有静态MAC/BIOS UUID的单字段官方事务及私有schema3恢复可用，范围以配置政策为准；下面早期模拟描述保留其原阶段含义。
+
+M12已实现：Core用单独的私有快照和公开验证结果类型组合既有两报告比较；Windows仅在显式私有模式读取两标识，普通报告不变；VMware仅解释配对历史，不调用写入/恢复；App比较页提供三阶段输入、分层状态及脱敏输出。可选网络接口GUID只限定私有采集范围，必须三阶段一致，指定缺失接口不回退；默认多网卡仍不可比较。私有输入与默认1.0报告严格分开，公开结果不含原值、身份哈希或接口GUID，旧报告只能证明公开观测；来源/版本/会话/时序不一致保持不可比较。复用既有查询限流、后台任务和原子新文件，无新项目/依赖或自动VM操作。详见[M12实际结果](V03-M12-REAL-ACCEPTANCE.md)。
+
+M09已实现：Core的IdentityAnalyzer从脱敏报告与相关声明生成17行只读视图；WindowsCollector只在显式选择时调用Identifiers类别；VMware的VmxIdentityReader仅返回敏感声明存在性；App/CLI共用采集引擎。未增加序列化结构或运行时依赖，详细范围和证据见[M09结果](V03-M09-RESULTS.md)。
+
+M10已实现：Core的IdentityExperimentCatalog登记两种固定候选及双语依据/风险/恢复，VMware的IdentityExperimentPlanner生成不可执行计划，App在原配置/报告页面预览和导出。M07的VmxConfigPlan含拟写VMX字节，M10不产生这种对象或调用事务；仅复用差异行与ReportFiles。独立计划JSON固定notExecuted/canExecute=false，不包含原标识、路径、内容哈希或拟写字节，没有导入/执行入口；诊断报告1.0不变。上下文变更使旧审阅失效，导出重读文件/版本，已有电源观测不当作实时查询。见[M10结果](V03-M10-RESULTS.md)。
+
+[v0.3 计划](V03-PLAN.md)和[M08 调研](V03-M08-FEASIBILITY.md)只补充职责，不声明新接口已实现。Core 承担证据状态、隐私和对比；Windows 扩展受支持的只读来源；VMware 负责配置声明、版本化能力及未来获准字段的官方事务；App 在既有页面展示实际能力和验证结果。
+
+先做 M09 只读分析，再做 M10 离线计划；M11 新写入必须逐字段满足目标版本依据、完整恢复和独立副本实测。安装契约中出现通用参数接口不等于任意字段可写。M08 没有批准任何新身份写入，不增加驱动、注入、私有参数或 VMX 直接替换回落。M11当前只修正既有事务在持久化intent之后做最终检查，复用原替身验证身份声明的拒绝/保留边界；没有新身份适配器或通用框架，见[模拟结果](V03-M11-SIMULATION-RESULTS.md)。
 
 ## 宿主机/客户机流程
 
