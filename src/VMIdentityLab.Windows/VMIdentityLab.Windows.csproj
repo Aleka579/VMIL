@@ -5,6 +5,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="VMIdentityLab.IntegrationTests" />
     <ProjectReference Include="../VMIdentityLab.Core/VMIdentityLab.Core.csproj" />
-    <PackageReference Include="System.Management" Version="10.0.12" />
+    <PackageReference Include="System.Management" Version="10.0.13" />
   </ItemGroup>
 </Project>

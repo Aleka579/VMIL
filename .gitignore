@@ -4,6 +4,8 @@
 artifacts/
 .vs/
 TestResults/
+**/__pycache__/
+*.py[cod]
 *.user
 *.suo
 *_wpftmp.csproj
@@ -11,6 +13,9 @@ TestResults/
 # Private local evidence and reports
 local-data/
 private/
+# Explicit M12 private capture defaults; arbitrary names still belong in local-data/ or private/.
+VMIL-PRIVATE-*.json
+PRIVATE-*.json
 *.log
 *.trx
 *.bak

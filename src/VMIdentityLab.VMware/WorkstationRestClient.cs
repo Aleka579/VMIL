@@ -13,7 +13,7 @@ public sealed class WorkstationApiException(HttpStatusCode statusCode)
 }
 
 // Caller owns authentication and HttpClient. No retries, power actions or file-write fallback.
-public sealed class WorkstationRestClient
+public sealed partial class WorkstationRestClient
 {
     private readonly HttpClient client;
     public WorkstationRestClient(HttpClient client)
@@ -102,6 +102,9 @@ public sealed class WorkstationRestClient
     }
 
     private static async Task<JsonDocument> ReadJsonAsync(HttpResponseMessage response, CancellationToken token)
+        => JsonDocument.Parse(await ReadBytesAsync(response, token), new() { MaxDepth = 16 });
+
+    private static async Task<byte[]> ReadBytesAsync(HttpResponseMessage response, CancellationToken token)
     {
         await using var input = await response.Content.ReadAsStreamAsync(token);
         using var output = new MemoryStream();
@@ -112,7 +115,7 @@ public sealed class WorkstationRestClient
             if (output.Length + count > VmxReader.MaxVmxBytes) throw InvalidResponse();
             output.Write(buffer, 0, count);
         }
-        return JsonDocument.Parse(output.ToArray(), new() { MaxDepth = 16 });
+        return output.ToArray();
     }
 
     private static WorkstationVmSettings Settings(JsonElement value, string expectedId)

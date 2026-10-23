@@ -17,6 +17,8 @@ public sealed record VmxBackupReceipt(string TargetPath, string BackupPath, stri
     public string Backend { get; init; } = "vmx-file";
     public VmxApiSettings? BeforeSettings { get; init; }
     public VmxApiSettings? AfterSettings { get; init; }
+    public VmxIdentitySettings? BeforeIdentity { get; init; }
+    public VmxIdentitySettings? AfterIdentity { get; init; }
 }
 
 public interface IVmxConfigTransaction
@@ -143,6 +145,8 @@ public sealed class VmxConfigManager(IVmPowerStateProbe? powerProbe = null, IVmx
 
     private void ValidateApproval(VmxPreparedChange preview)
     {
+        if (preview.Plan.IsIdentityChange)
+            throw new InvalidOperationException("Identity changes cannot use the legacy file backend.");
         if (preview.Plan.RequiresTopologyReview || preview.Plan.Changes.Any(change => !writePolicy.IsApproved(preview.WorkstationVersion, change)))
             throw new InvalidOperationException("No verified write policy covers this configuration and version.");
         var document = VmxDocument.Parse(preview.Plan.GetProposedBytes());

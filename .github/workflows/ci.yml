@@ -36,6 +36,8 @@ jobs:
         run: dotnet test --project tests/VMIdentityLab.IntegrationTests/VMIdentityLab.IntegrationTests.csproj -c Release --no-build --parallel none --report-xunit-trx --report-xunit-trx-filename files.trx --results-directory artifacts/test-results
       - name: Publish local artifact
         run: dotnet publish src/VMIdentityLab.App/VMIdentityLab.App.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -p:DebugSymbols=false -m:1 --disable-build-servers -o artifacts/publish/win-x64
+      - name: Publish matching guest validation driver
+        run: dotnet publish tools/desktop/VMIdentityLab.DesktopTest/VMIdentityLab.DesktopTest.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -p:DebugSymbols=false -m:1 --disable-build-servers -o artifacts/publish/test-driver
       - name: Test results
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -51,12 +53,14 @@ jobs:
           Copy-Item -Path licenses/* -Destination artifacts/publish/win-x64/third-party
       - name: Record artifact version and source
         run: |
+          if (git status --porcelain --untracked-files=all) { throw 'Source must remain clean.' }
           $appVersion = (Get-Item -LiteralPath artifacts/publish/win-x64/VMIdentityLab.App.dll).VersionInfo.ProductVersion.Split('+')[0]
           $runtime = Get-Content -LiteralPath artifacts/publish/win-x64/VMIdentityLab.App.runtimeconfig.json -Raw | ConvertFrom-Json
           $buildInfo = [ordered]@{
             application = 'VM Identity Lab'
             version = $appVersion
             sourceCommit = (git rev-parse HEAD)
+            sourceState = 'clean'
             configuration = 'Release'
             runtimeIdentifier = 'win-x64'
             selfContained = $true
@@ -66,8 +70,31 @@ jobs:
             distribution = 'ci-artifact'
           }
           $buildInfo | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath artifacts/publish/win-x64/BUILD-INFO.json -Encoding utf8NoBOM
+          foreach ($name in @('VMIdentityLab.App.exe', 'VMIdentityLab.App.dll', 'VMIdentityLab.Core.dll', 'VMIdentityLab.Windows.dll', 'VMIdentityLab.VMware.dll')) {
+            $actual = (Get-Item -LiteralPath "artifacts/publish/win-x64/$name").VersionInfo.ProductVersion
+            if ($actual -ne "$appVersion+$($buildInfo.sourceCommit)") { throw "Unexpected source/version in $name." }
+          }
+      - name: Record package file hashes
+        run: |
+          $published = (Resolve-Path -LiteralPath artifacts/publish/win-x64).Path
+          $manifest = [ordered]@{}
+          Get-ChildItem -LiteralPath $published -File -Recurse | Sort-Object FullName | ForEach-Object {
+            $relative = [IO.Path]::GetRelativePath($published, $_.FullName).Replace('\', '/')
+            $manifest[$relative] = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          $manifest | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath artifacts/publish/win-x64/PACKAGE-FILES.json -Encoding utf8NoBOM
       - name: Alpha build
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: VMIdentityLab-win-x64-alpha
           path: artifacts/publish/win-x64
+      - name: Guest validation driver entries
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: VMIdentityLab-guest-test-driver
+          path: |
+            artifacts/publish/test-driver/VMIdentityLab.DesktopTest.exe
+            artifacts/publish/test-driver/VMIdentityLab.DesktopTest.dll
+            artifacts/publish/test-driver/VMIdentityLab.DesktopTest.deps.json
+            artifacts/publish/test-driver/VMIdentityLab.DesktopTest.runtimeconfig.json
+          if-no-files-found: error

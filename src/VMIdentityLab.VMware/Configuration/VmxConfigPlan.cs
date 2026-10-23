@@ -12,6 +12,7 @@ public sealed class VmxConfigPlan
     public string ProposedHash { get; }
     public IReadOnlyList<VmxConfigChange> Changes { get; }
     public bool RequiresTopologyReview { get; }
+    public bool IsIdentityChange => Changes.Count == 1 && VmxIdentityConfigPlanner.IsIdentityKey(Changes[0].Key);
 
     internal VmxConfigPlan(VmxDocument document, byte[] bytes, List<VmxConfigChange> changes, bool topologyReview)
     {
@@ -57,7 +58,7 @@ public static class VmxConfigPlanner
             if (before.Value != value) changes.Add(new(canonical, before.Value, value, canonical == "memsize" ? "MiB" : "count"));
         }
         if (changes.Count == 0) throw new ArgumentException("No changed values.");
-        var bytes = document.ReplaceNumericValues(replacements);
+        var bytes = document.ReplaceValues(replacements);
         var parsed = VmxDocument.Parse(bytes);
         if (parsed.HasAmbiguity || parsed.Limitations.Count != 0) throw new InvalidDataException("Proposed VMX could not be verified.");
         return new(document, bytes, changes, topologyReview);

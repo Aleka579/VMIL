@@ -23,7 +23,9 @@ public sealed class LocalVmxBackupHistory(string directory) : IVmxBackupHistory
     };
     private sealed record Stored(int SchemaVersion, Guid Id, DateTimeOffset RecordedAt, string Operation,
         string TargetPath, string BackupPath, string OriginalHash, string AppliedHash, string WorkstationVersion,
-        string? Backend = null, VmxApiSettings? BeforeSettings = null, VmxApiSettings? AfterSettings = null);
+        string? Backend = null, VmxApiSettings? BeforeSettings = null, VmxApiSettings? AfterSettings = null,
+        [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] VmxIdentitySettings? BeforeIdentity = null,
+        [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] VmxIdentitySettings? AfterIdentity = null);
 
     public async Task SaveAsync(VmxBackupHistoryEntry entry, CancellationToken token = default)
     {
@@ -32,9 +34,9 @@ public sealed class LocalVmxBackupHistory(string directory) : IVmxBackupHistory
         var destination = Path.Combine(directory, entry.Id.ToString("N") + ".json");
         var temporary = destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
         var receipt = entry.Receipt;
-        var stored = new Stored(2, entry.Id, entry.RecordedAt, entry.Operation, receipt.TargetPath,
+        var stored = new Stored(receipt.BeforeIdentity is null ? 2 : 3, entry.Id, entry.RecordedAt, entry.Operation, receipt.TargetPath,
             receipt.BackupPath, receipt.OriginalHash, receipt.AppliedHash, receipt.WorkstationVersion.ToString(),
-            receipt.Backend, receipt.BeforeSettings, receipt.AfterSettings);
+            receipt.Backend, receipt.BeforeSettings, receipt.AfterSettings, receipt.BeforeIdentity, receipt.AfterIdentity);
         var bytes = JsonSerializer.SerializeToUtf8Bytes(stored, Options);
         if (bytes.Length > 32768) throw new InvalidDataException("Recovery record exceeds the supported size.");
         Directory.CreateDirectory(directory);
@@ -54,21 +56,7 @@ public sealed class LocalVmxBackupHistory(string directory) : IVmxBackupHistory
             token.ThrowIfCancellationRequested();
             try
             {
-                await using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
-                if (file.Length > 32768) throw new InvalidDataException("Recovery record exceeds the supported size.");
-                var stored = await JsonSerializer.DeserializeAsync<Stored>(file, Options, token)
-                    ?? throw new InvalidDataException("Recovery record is empty.");
-                if (stored.SchemaVersion is not (1 or 2) || !Version.TryParse(stored.WorkstationVersion, out var version)
-                    || stored.SchemaVersion == 1 && (stored.Backend is not null || stored.BeforeSettings is not null || stored.AfterSettings is not null))
-                    throw new InvalidDataException("Recovery record version is unsupported.");
-                var entry = new VmxBackupHistoryEntry(stored.Id, stored.RecordedAt, stored.Operation,
-                    new(stored.TargetPath, stored.BackupPath, stored.OriginalHash, stored.AppliedHash, version)
-                    { Backend = stored.SchemaVersion == 1 ? "vmx-file" : stored.Backend!,
-                      BeforeSettings = stored.BeforeSettings, AfterSettings = stored.AfterSettings });
-                Validate(entry);
-                if (Path.GetFileName(path) != entry.Id.ToString("N") + ".json")
-                    throw new InvalidDataException("Recovery record identity does not match its file.");
-                entries.Add(entry);
+                entries.Add(await ReadEntryAsync(path, token));
             }
             catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException or JsonException or ArgumentException)
             { unreadable++; }
@@ -76,19 +64,49 @@ public sealed class LocalVmxBackupHistory(string directory) : IVmxBackupHistory
         return new(entries.OrderByDescending(entry => entry.RecordedAt).ToArray(), unreadable);
     }
 
+    public static async Task<VmxBackupHistoryEntry> ReadEntryAsync(string path, CancellationToken token = default)
+    {
+        await using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
+        if (file.Length > 32768) throw new InvalidDataException("Recovery record exceeds the supported size.");
+        var stored = await JsonSerializer.DeserializeAsync<Stored>(file, Options, token)
+            ?? throw new InvalidDataException("Recovery record is empty.");
+        if (stored.SchemaVersion is not (1 or 2 or 3) || !Version.TryParse(stored.WorkstationVersion, out var version)
+            || stored.SchemaVersion == 1 && (stored.Backend is not null || stored.BeforeSettings is not null || stored.AfterSettings is not null)
+            || stored.SchemaVersion < 3 && (stored.BeforeIdentity is not null || stored.AfterIdentity is not null)
+            || stored.SchemaVersion == 3 && (stored.BeforeIdentity is null || stored.AfterIdentity is null))
+            throw new InvalidDataException("Recovery record version is unsupported.");
+        var entry = new VmxBackupHistoryEntry(stored.Id, stored.RecordedAt, stored.Operation,
+            new(stored.TargetPath, stored.BackupPath, stored.OriginalHash, stored.AppliedHash, version)
+            { Backend = stored.SchemaVersion == 1 ? "vmx-file" : stored.Backend!, BeforeSettings = stored.BeforeSettings,
+              AfterSettings = stored.AfterSettings, BeforeIdentity = stored.BeforeIdentity, AfterIdentity = stored.AfterIdentity });
+        Validate(entry);
+        if (Path.GetFileName(path) != entry.Id.ToString("N") + ".json") throw new InvalidDataException("Recovery record identity does not match its file.");
+        return entry;
+    }
+
     private static void Validate(VmxBackupHistoryEntry entry)
     {
         if (entry.Id == Guid.Empty || entry.RecordedAt == default || entry.Operation is not ("apply" or "restore")
             || entry.Receipt is null) throw new InvalidDataException("Recovery record metadata is invalid.");
         var receipt = entry.Receipt;
-        if (receipt.Backend is not ("vmx-file" or VmxApiConfigManager.BackendName)
-            || receipt.Backend == VmxApiConfigManager.BackendName &&
-               (receipt.BeforeSettings is null || receipt.AfterSettings is null
-                || !receipt.BeforeSettings.IsValid || !receipt.AfterSettings.IsValid
-                || receipt.BeforeSettings.CoresPerSocket != receipt.AfterSettings.CoresPerSocket
-                || receipt.BeforeSettings.HardwareVersion != receipt.AfterSettings.HardwareVersion)
-            || receipt.Backend == "vmx-file" && (receipt.BeforeSettings is not null || receipt.AfterSettings is not null))
-            throw new InvalidDataException("Recovery backend or API settings are invalid.");
+        if (receipt.BeforeIdentity is not null || receipt.AfterIdentity is not null)
+        {
+            if (receipt.Backend != VmxApiConfigManager.BackendName || receipt.BeforeSettings is not null
+                || receipt.AfterSettings is not null || receipt.BeforeIdentity is null || receipt.AfterIdentity is null)
+                throw new InvalidDataException("Identity recovery metadata is ambiguous.");
+            _ = VmxIdentitySettings.ChangedKey(receipt.BeforeIdentity, receipt.AfterIdentity);
+        }
+        else
+        {
+            if (receipt.Backend is not ("vmx-file" or VmxApiConfigManager.BackendName)
+                || receipt.Backend == VmxApiConfigManager.BackendName &&
+                   (receipt.BeforeSettings is null || receipt.AfterSettings is null
+                    || !receipt.BeforeSettings.IsValid || !receipt.AfterSettings.IsValid
+                    || receipt.BeforeSettings.CoresPerSocket != receipt.AfterSettings.CoresPerSocket
+                    || receipt.BeforeSettings.HardwareVersion != receipt.AfterSettings.HardwareVersion)
+                || receipt.Backend == "vmx-file" && (receipt.BeforeSettings is not null || receipt.AfterSettings is not null))
+                throw new InvalidDataException("Recovery backend or API settings are invalid.");
+        }
         if (!Path.IsPathFullyQualified(receipt.TargetPath) || !Path.IsPathFullyQualified(receipt.BackupPath)
             || !Path.GetExtension(receipt.TargetPath).Equals(".vmx", StringComparison.OrdinalIgnoreCase)
             || !Path.GetExtension(receipt.BackupPath).Equals(".bak", StringComparison.OrdinalIgnoreCase)

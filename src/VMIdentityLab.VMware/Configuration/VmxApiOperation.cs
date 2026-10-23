@@ -22,9 +22,11 @@ public sealed record VmxApiSettings(int MemoryMiB, int Processors, int CoresPerS
     internal bool Matches(WorkstationVmSettings settings) => settings.MemoryMiB == MemoryMiB && settings.Processors == Processors;
 }
 
-// Finite provider evidence: docs/V02-FULL-TEST-RESULTS-2026-10-17.md.
+// Finite provider evidence: docs/V02-FULL-TEST-RESULTS-2026-10-17.md and
+// docs/V03-M11-APP-ACCEPTANCE.md. Identity admission also requires the complete
+// existing-field / disconnected static host-only profile in VmxIdentityConfigPlanner.
 // A racing VMware start can change boot metadata while power still reports off. The transaction
-// must retain its intent on any unexpected content/state; this policy does not relax those checks.
+// must retain its intent after dispatch on any unexpected content/state; this policy does not relax those checks.
 // This is separate from the legacy file policy. No environment/CLI approval bypass.
 public sealed class ReleasedVmxApiWritePolicy : IVmxWritePolicy
 {
@@ -34,6 +36,8 @@ public sealed class ReleasedVmxApiWritePolicy : IVmxWritePolicy
         {
             "memsize" => change.Before is "4096" or "6144" && change.After is "4096" or "6144",
             "numvcpus" => change.Before is "2" or "4" && change.After is "2" or "4",
+            "ethernet0.address" => VmxIdentityConfigPlanner.IsMac(change.Before) && VmxIdentityConfigPlanner.IsMac(change.After),
+            "uuid.bios" => VmxIdentityConfigPlanner.IsUuid(change.Before) && VmxIdentityConfigPlanner.IsUuid(change.After),
             _ => false
         });
     public static bool IsTestedCandidate(VmxPreparedChange preview)

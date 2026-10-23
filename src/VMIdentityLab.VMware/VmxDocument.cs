@@ -34,8 +34,13 @@ public sealed partial class VmxDocument
     public IEnumerable<VmxEntry> Entries => Lines.Where(line => line.Entry is not null).Select(line => line.Entry!);
     public byte[] GetOriginalBytes() => original.ToArray();
 
+    internal IEnumerable<(string Key, string Comment)> InlineComments()
+        => Lines.Where(line => line.Entry is not null).OrderBy(line => line.Entry!.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(line => (line.Entry!.Key.ToLowerInvariant(),
+                EntryLine().Match(line.Raw.TrimEnd('\r', '\n')).Groups["comment"].Value.TrimEnd()));
+
     // Pure transformation for previews. File writes are owned by VmxConfigManager.
-    internal byte[] ReplaceNumericValues(IReadOnlyDictionary<string, string> replacements)
+    internal byte[] ReplaceValues(IReadOnlyDictionary<string, string> replacements)
     {
         if (HasAmbiguity || Limitations.Count != 0) throw new InvalidDataException("VMX input is not editable.");
         var bom = original.AsSpan().StartsWith(new byte[] { 0xEF, 0xBB, 0xBF }) ? 3
@@ -145,7 +150,7 @@ public sealed partial class VmxDocument
     private static partial Regex EncodingDeclaration();
     [GeneratedRegex(@"[^\r\n]*(?:\r\n|\r|\n|$)", RegexOptions.CultureInvariant, 200)]
     private static partial Regex RawLine();
-    [GeneratedRegex("^\\s*(?<key>[A-Za-z0-9_.:-]+)\\s*=\\s*\"(?<value>[^\"]*)\"\\s*(?:#.*)?$", RegexOptions.CultureInvariant, 200)]
+    [GeneratedRegex("^\\s*(?<key>[A-Za-z0-9_.:-]+)\\s*=\\s*\"(?<value>[^\"]*)\"\\s*(?<comment>#.*)?$", RegexOptions.CultureInvariant, 200)]
     private static partial Regex EntryLine();
     [GeneratedRegex(@"^[A-Za-z0-9_-]{1,64}$", RegexOptions.CultureInvariant, 200)]
     private static partial Regex PublicIdentifier();

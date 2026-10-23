@@ -4,6 +4,8 @@ using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
 using System.Windows.Automation;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 // Development-only driver, using Windows UI Automation and standard native dialog notifications.
 // Each operation targets a supplied process. This tool is excluded from the application package.
@@ -15,6 +17,8 @@ internal static class Program
     [DllImport("user32.dll", SetLastError = true)]
     private static extern nint SendMessageTimeoutW(nint window, uint message, nuint wParam, nint lParam,
         uint flags, uint timeout, out nuint result);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool PostMessageW(nint window, uint message, nuint wParam, nint lParam);
     [DllImport("user32.dll")] private static extern bool ShowWindowAsync(nint window, int command);
     [DllImport("user32.dll", SetLastError = true)]
     private static extern bool SetWindowPos(nint window, nint after, int x, int y, int width, int height, uint flags);
@@ -23,6 +27,11 @@ internal static class Program
     {
         try
         {
+            if (args.Length is 2 or 3 && args[0] == "verify-preview")
+            {
+                VerifyPreview(args[1], args.Length == 3 && args[2] == "identity");
+                return 0;
+            }
             if (args.Length < 2) throw new ArgumentException("action processId [name/id/output] [value]");
             var pid = int.Parse(args[1]);
             var windows = Windows(pid);
@@ -42,6 +51,8 @@ internal static class Program
                         gridRows = element.TryGetCurrentPattern(GridPattern.Pattern, out var grid)
                             ? ((GridPattern)grid).Current.RowCount : (int?)null,
                         enabled = element.Current.IsEnabled, offscreen = element.Current.IsOffscreen,
+                        toggle = element.TryGetCurrentPattern(TogglePattern.Pattern, out var toggleState)
+                            ? ((TogglePattern)toggleState).Current.ToggleState.ToString() : null,
                         value = !element.Current.IsPassword && element.TryGetCurrentPattern(ValuePattern.Pattern, out var pattern)
                             ? ((ValuePattern)pattern).Current.Value : null
                     }).ToArray();
@@ -66,6 +77,30 @@ internal static class Program
                     Unique(windows.Where(window => window.Current.Name == args[2])).SetFocus();
                     break;
                 case "invoke": Invoke(Invokable(args[2])); break;
+                case "context-menu":
+                    var contextItem = Unique(candidates.Where(element => element.Current.Name == args[2]
+                        && element.Current.ControlType == ControlType.TreeItem
+                        && element.TryGetCurrentPattern(SelectionItemPattern.Pattern, out _)));
+                    var contextSelection = (SelectionItemPattern)contextItem.GetCurrentPattern(SelectionItemPattern.Pattern);
+                    contextSelection.Select();
+                    if (!contextSelection.Current.IsSelected) throw new InvalidOperationException("Tree selection did not persist.");
+                    contextItem.SetFocus();
+                    var contextTree = contextItem;
+                    while (contextTree.Current.ControlType != ControlType.Tree)
+                        contextTree = TreeWalker.ControlViewWalker.GetParent(contextTree)
+                            ?? throw new InvalidOperationException("No native tree control.");
+                    var contextHandle = contextTree.Current.NativeWindowHandle;
+                    GetWindowThreadProcessId(contextHandle, out var contextOwner);
+                    var contextClass = new StringBuilder(128);
+                    GetClassNameW(contextHandle, contextClass, 128);
+                    if (contextHandle == 0 || contextOwner != pid
+                        || contextClass.ToString() is not ("SysTreeView32" or "ATL:SysTreeView32"))
+                        throw new InvalidOperationException("Tree ownership could not be verified.");
+                    // Keyboard-context location (-1) asks the control to anchor to
+                    // its selected item. Post avoids blocking on TrackPopupMenu.
+                    if (!PostMessageW(contextHandle, 0x7b, (nuint)contextHandle, -1))
+                        throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+                    break;
                 case "check":
                     var checkbox = Unique(candidates.Where(element => element.Current.AutomationId == args[2]
                         && element.Current.ControlType == ControlType.CheckBox
@@ -108,6 +143,13 @@ internal static class Program
                     var selectedItem = (SelectionItemPattern)item.GetCurrentPattern(SelectionItemPattern.Pattern);
                     selectedItem.Select();
                     if (!selectedItem.Current.IsSelected) throw new InvalidOperationException("Item selection did not persist.");
+                    break;
+                case "scroll":
+                    var scrollControl = Unique(candidates.Where(element => element.Current.AutomationId == args[2]
+                        && element.TryGetCurrentPattern(ScrollPattern.Pattern, out _)));
+                    var scrolling = (ScrollPattern)scrollControl.GetCurrentPattern(ScrollPattern.Pattern);
+                    if (!scrolling.Current.VerticallyScrollable) throw new InvalidOperationException("This control cannot scroll vertically.");
+                    scrolling.SetScrollPercent(ScrollPattern.NoScroll, double.Parse(args[3], System.Globalization.CultureInfo.InvariantCulture));
                     break;
                 case "select-option":
                     var optionCombo = Unique(candidates.Where(element => element.Current.AutomationId == args[2]
@@ -180,6 +222,46 @@ internal static class Program
                 arguments = args, time = DateTimeOffset.UtcNow.ToOffset(TimeSpan.FromHours(8)) });
             return 1;
         }
+    }
+
+    // Regression check for synthetic 1220x800 previews; this does not replace visual review.
+    private static void VerifyPreview(string path, bool identity)
+    {
+        using var file = File.OpenRead(path);
+        var frame = BitmapDecoder.Create(file, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad).Frames[0];
+        if (frame.PixelWidth != 1220 || frame.PixelHeight != 800)
+            throw new InvalidDataException("Unexpected preview dimensions.");
+        var bitmap = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, null, 0);
+        var pixels = new byte[1220 * 800 * 4];
+        bitmap.CopyPixels(pixels, 1220 * 4, 0);
+        var alpha = new int[256];
+        for (var index = 3; index < pixels.Length; index += 4) alpha[pixels[index]]++;
+        int Ink(int left, int top, int right, int bottom)
+        {
+            var count = 0;
+            for (var y = top; y < bottom; y++)
+                for (var x = left; x < right; x++)
+                {
+                    var index = (y * 1220 + x) * 4;
+                    if (pixels[index] < 180 && pixels[index + 1] < 160 && pixels[index + 2] < 160) count++;
+                }
+            return count;
+        }
+        var title = Ink(248, 24, 650, 65);
+        var cells = identity ? new[] { Ink(575, 304, 695, 332), Ink(575, 346, 695, 374), Ink(575, 388, 695, 416) } : [];
+        var minimumAlpha = Array.FindIndex(alpha, count => count != 0);
+        if (minimumAlpha != 255) throw new InvalidDataException("Preview contains transparent content.");
+        bool Background(int x, int y, byte red, byte green, byte blue)
+        {
+            var index = (y * 1220 + x) * 4;
+            return pixels[index] == blue && pixels[index + 1] == green && pixels[index + 2] == red;
+        }
+        if (!Background(10, 10, 21, 45, 73) || !Background(1200, 790, 243, 246, 251))
+            throw new InvalidDataException("Preview background is missing, cropped or scaled.");
+        if (title < 20 || cells.Any(count => count < 10))
+            throw new InvalidDataException("Expected title or identity observation glyphs are missing.");
+        Record(new { status = "passed", operation = "verify-preview", image = Path.GetFileName(path),
+            width = 1220, height = 800, minimumAlpha, titleInk = title, observationInk = cells });
     }
 
     private static AutomationElement[] Windows(int pid) => AutomationElement.RootElement.FindAll(TreeScope.Children,

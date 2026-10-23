@@ -3,7 +3,7 @@ using VMIdentityLab.Core.Reports;
 
 namespace VMIdentityLab.Windows;
 
-public enum ObservationCategory { Smbios, Cpu, Pnp, Tools, System }
+public enum ObservationCategory { Smbios, Cpu, Pnp, Tools, System, Identifiers }
 public sealed record CollectionProgress(ObservationCategory Category, int Completed, int Total);
 
 public interface IWindowsDataSource
@@ -17,14 +17,16 @@ public sealed class WindowsCollector(IWindowsDataSource? source = null, TimeSpan
     private readonly TimeSpan timeout = categoryTimeout ?? TimeSpan.FromSeconds(5);
     private readonly SemaphoreSlim collectionGate = new(1, 1);
 
-    public async Task<DiagnosticReport> CollectAsync(CancellationToken cancellationToken = default, IProgress<CollectionProgress>? progress = null)
+    public async Task<DiagnosticReport> CollectAsync(CancellationToken cancellationToken = default,
+        IProgress<CollectionProgress>? progress = null, bool includeIdentifiers = false)
     {
         await collectionGate.WaitAsync(cancellationToken);
         try
         {
             var findings = new List<Finding>();
             var started = DateTimeOffset.UtcNow;
-            var categories = Enum.GetValues<ObservationCategory>();
+            var categories = Enum.GetValues<ObservationCategory>()
+                .Where(category => includeIdentifiers || category != ObservationCategory.Identifiers).ToArray();
             foreach (var category in categories)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -71,7 +73,8 @@ public sealed class WindowsCollector(IWindowsDataSource? source = null, TimeSpan
     }
 
     internal static IEnumerable<FindingDefinition> Definitions(ObservationCategory category) => FindingCatalog.ById.Values
-        .Where(item => item.Category == category.ToString().ToLowerInvariant() && item.Sensitivity == DataSensitivity.Public)
+        .Where(item => category == ObservationCategory.Identifiers ? item.Sensitivity == DataSensitivity.Identifier
+            : item.Category == category.ToString().ToLowerInvariant() && item.Sensitivity == DataSensitivity.Public)
         .OrderBy(item => item.Id, StringComparer.Ordinal);
 
     internal static Finding Unavailable(FindingDefinition definition, DateTimeOffset time, CollectionStatus status) => new()

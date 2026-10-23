@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Globalization;
 using System.Management;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
@@ -9,26 +10,32 @@ using VMIdentityLab.Core.Reports;
 
 namespace VMIdentityLab.Windows;
 
-public sealed class NativeWindowsDataSource : IWindowsDataSource
+public sealed class NativeWindowsDataSource : IWindowsDataSource, IValidationIdentitySource
 {
     // At most one WMI query can run. A timed-out WMI call cannot accumulate workers.
     private readonly SemaphoreSlim nativeGate = new(1, 1);
 
     public async Task<IReadOnlyList<Finding>> CollectCategoryAsync(ObservationCategory category, DateTimeOffset observedAt, CancellationToken cancellationToken)
+        => await CollectAsync(category, observedAt, cancellationToken, false);
+
+    public Task<IReadOnlyList<Finding>> CollectValidationIdentitiesAsync(DateTimeOffset time, CancellationToken token, Guid? networkAdapterId = null)
+        => CollectAsync(ObservationCategory.Identifiers, time, token, true, networkAdapterId);
+
+    private async Task<IReadOnlyList<Finding>> CollectAsync(ObservationCategory category, DateTimeOffset observedAt, CancellationToken cancellationToken, bool validationOnly, Guid? networkAdapterId = null)
     {
         // CPU observations are local instructions/properties and must not queue behind slow WMI.
         if (category == ObservationCategory.Cpu)
-            return await Task.Run(() => Read(category, observedAt, cancellationToken), cancellationToken);
+            return await Task.Run(() => Read(category, observedAt, cancellationToken, validationOnly, networkAdapterId), cancellationToken);
 
         await nativeGate.WaitAsync(cancellationToken);
         try
         {
-            return await Task.Run(() => Read(category, observedAt, cancellationToken), cancellationToken);
+            return await Task.Run(() => Read(category, observedAt, cancellationToken, validationOnly, networkAdapterId), cancellationToken);
         }
         finally { nativeGate.Release(); }
     }
 
-    private static IReadOnlyList<Finding> Read(ObservationCategory category, DateTimeOffset time, CancellationToken token)
+    private static IReadOnlyList<Finding> Read(ObservationCategory category, DateTimeOffset time, CancellationToken token, bool validationOnly, Guid? networkAdapterId)
     {
         if (!OperatingSystem.IsWindows()) throw new PlatformNotSupportedException();
         token.ThrowIfCancellationRequested();
@@ -46,6 +53,15 @@ public sealed class NativeWindowsDataSource : IWindowsDataSource
 
         switch (category)
         {
+            case ObservationCategory.Identifiers:
+                var product = QueryOne("SELECT UUID FROM Win32_ComputerSystemProduct", ["UUID"], token);
+                var uuid = Text("smbios.uuid", product, "UUID");
+                if (uuid.Status == CollectionStatus.Success && (!Guid.TryParse(uuid.Value.Text, out var parsedUuid)
+                    || parsedUuid == Guid.Empty || parsedUuid == Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff")))
+                    uuid = Item("smbios.uuid", new(), CollectionStatus.NotSupported);
+                if (validationOnly) return [uuid, ReadMacAddresses(time, token, networkAdapterId)];
+                var serial = QueryOne("SELECT SerialNumber FROM Win32_BIOS", ["SerialNumber"], token);
+                return [uuid, Text("smbios.serialNumber", serial, "SerialNumber"), ReadMacAddresses(time, token)];
             case ObservationCategory.Smbios:
                 var system = QueryOne("SELECT Manufacturer, Model FROM Win32_ComputerSystem", ["Manufacturer", "Model"], token);
                 var bios = QueryOne("SELECT SMBIOSBIOSVersion FROM Win32_BIOS", ["SMBIOSBIOSVersion"], token);
@@ -125,6 +141,32 @@ public sealed class NativeWindowsDataSource : IWindowsDataSource
     }
 
     private sealed record QueryResult(Dictionary<string, object?> Values, CollectionStatus Status);
+
+    private static Finding ReadMacAddresses(DateTimeOffset time, CancellationToken token, Guid? networkAdapterId = null)
+    {
+        Finding Result(FindingValue value, CollectionStatus status) => new()
+        {
+            Id = "network.macAddress", Category = "system", Source = FindingCatalog.ById["network.macAddress"].Source,
+            ObservedAt = time, Value = value, Status = status, Sensitivity = DataSensitivity.Identifier
+        };
+        try
+        {
+            var addresses = new SortedSet<string>(StringComparer.Ordinal);
+            foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                token.ThrowIfCancellationRequested();
+                if (networkAdapterId is not null && (!Guid.TryParse(adapter.Id, out var id) || id != networkAdapterId)) continue;
+                if (adapter.NetworkInterfaceType is NetworkInterfaceType.Loopback or NetworkInterfaceType.Tunnel) continue;
+                var bytes = adapter.GetPhysicalAddress().GetAddressBytes();
+                if (bytes.Length == 6 && bytes.Any(value => value != 0)) addresses.Add(Convert.ToHexString(bytes));
+            }
+            return addresses.Count == 0 ? Result(new(), CollectionStatus.NotSupported)
+                : Result(FindingValue.FromText(string.Join(";", addresses)), CollectionStatus.Success);
+        }
+        catch (UnauthorizedAccessException) { return Result(new(), CollectionStatus.AccessDenied); }
+        catch (PlatformNotSupportedException) { return Result(new(), CollectionStatus.NotSupported); }
+        catch (NetworkInformationException) { return Result(new(), CollectionStatus.Failed); }
+    }
     private static ManagementObjectSearcher Searcher(string query) => new(new ManagementScope("root\\cimv2"),
         new ObjectQuery(query), new System.Management.EnumerationOptions { ReturnImmediately = false, Timeout = TimeSpan.FromSeconds(2) });
 

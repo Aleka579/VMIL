@@ -1,6 +1,14 @@
 # 依赖与支持版本要求
 
-版本基线核对日期：2026-10-10；实际验证更新：2026-10-17，GitHub官方Action/Runner同日复核。本轮未升级依赖或改变最低版本要求。本文列出版本要求；[兼容性矩阵](COMPATIBILITY.md)记录具体环境和证据。声明范围、已解析版本、文件存在与测试通过分别标记。
+## 2026-10-21 M13当前候选更新
+
+当前源码0.3.0-alpha.1，本地准备、尚未推送或发布。[M13维护期复核](V03-M13-LOCAL-READINESS.md)列出本轮官方依据：.NET10 LTS及PowerShell7.6 LTS维护至2028-11-14，Python3.14处于bugfix且计划2030-10结束；xUnit4.0.1/MTP2.4及固定官方Actions保持维护依据。没有新采用临期工具或替换框架。
+
+本候选System.Management及传递System.CodeDom固定**10.0.13**，自包含NETCore/WindowsDesktop固定**10.0.13**，版本入口分别为Windows.csproj及Directory.Build.props。复用已有本地SDK10.0.401，不安装系统组件；CI按global.json的latestPatch选择，未来实际SDK另记，不将旧本地SDK称作最新补丁。原v0.2/M09/M11/M12包及下方旧依赖表保留当时版本，不能当成本候选依赖或验收结果。最终包以BUILD-INFO、deps、runtimeconfig和逐文件清单为准；新CI/目标验收仍待执行。
+
+## 历史基线和环境依据
+
+版本基线核对日期：2026-10-10；实际验证更新：2026-10-18，GitHub官方Action/Runner于2026-10-17复核。本轮CPU修复未升级依赖或改变最低版本要求。本文列出版本要求；[兼容性矩阵](COMPATIBILITY.md)记录具体环境和证据。声明范围、已解析版本、文件存在与测试通过分别标记。
 
 ## 统一基线
 
@@ -22,8 +30,8 @@
 | vmrest.exe | 随所选Workstation提供，实际REST API兼容后启用；有限配置操作需要 | 官方清单/电源/设置读取及有限PUT；普通采集和VMX解析不以REST为前提 | 1.3.1 build-23775571；真实App有限应用/恢复、状态拒绝及精确媒体类型通过，临时接口已停止 |
 | VMware Tools | 与客户机OS及Workstation兼容且服务运行，具体版本先检查 | vmrun客体操作前置；应用只读采集不要求安装 | running，产品11.3.5.18557794、文件11.3.5.31214实测，不编造其他数值最低版 |
 | vmcli.exe | 可选，需实际存在且工具命令兼容 | 下载MCP的43个vmcli声明工具 | 17.5.2安装目录未发现，不属于当前最低基线必需依赖 |
-| .NET SDK | global.json起点10.0.401，latestPatch允许同特性带稳定补丁 | 宿主构建/测试；客户机运行自包含包不需要SDK | 本地10.0.401；2026-10-17 CI实际10.0.402，构建/127单元/100集成通过 |
-| .NET Runtime | .NET 10 LTS，按具体包实际版本记录 | 应用运行 | 本地5de验收包10.0.12；CI包NETCore/WindowsDesktop实际10.0.13，未做客户机验收 |
+| .NET SDK | global.json起点10.0.401，latestPatch允许同特性带稳定补丁 | 宿主构建/测试；客户机运行自包含包不需要SDK | 本地10.0.401；新e27543f CI实际10.0.402，构建/130单元/106集成通过 |
+| .NET Runtime | .NET 10 LTS，按具体包实际版本记录 | 应用运行 | 本地5de验收包10.0.12；新e27543f CI包NETCore/WindowsDesktop10.0.13，客户机严格23/23、CLI及GUI14/14，见[CPU18](CPU-FIX-ACCEPTANCE-2026-10-18.md)；旧3832的20/23保留历史 |
 | C# / WPF / MVVM | C#14.0、.NET 10 WPF；MVVM为项目内实现 | 编译/界面 | Directory.Build.props与App项目固定，无额外MVVM框架 |
 | PowerShell | 7.6 LTS，项目内准备最新补丁7.6.6 | 宿主脚本；客户机EXE不依赖 | 7.6.6官方框架依赖ZIP/哈希/版本通过，复用.NET10.0.12；Codex自带仍7.6.5 |
 | Git for Windows | 已验证基线2.53.0.windows.3，采用维护中的安全补丁 | 源码版本管理 | 本次git --version核实；应用用户无需Git |
@@ -50,7 +58,7 @@ CI同特性带补丁选择来自既有latestPatch规则，不改源码版本或�
 
 ## NuGet完整已解析集合
 
-来源为既有App及两个测试项目的project.assets.json和发布文件。本轮复用既有解析集合，最新127单元/100模拟集成通过；没有新增包或手工覆盖传递版本。状态及有限配置请求使用平台System.Net.Http。
+来源为既有App及两个测试项目的project.assets.json和发布文件。本轮CPU修复复用既有解析集合，最新130单元/106模拟集成通过；没有新增包或手工覆盖传递版本。状态及有限配置请求使用平台System.Net.Http。
 
 | 包名 | 已解析版本 | 使用范围 |
 | --- | --- | --- |
@@ -100,7 +108,7 @@ CursorTouch/Windows-MCP、WinProbe、Node.js、uv和SSH未作为此次下载MCP�
 | actions/checkout | v7.0.1，3d3c42e5aac5ba805825da76410c181273ba90b1 | workflow固定 |
 | actions/setup-dotnet | v6.0.0，a98b56852c35b8e3190ac28c8c2271da59106c68 | 读取global.json |
 | actions/upload-artifact | v7.0.2，cf430e030ddbb5b0abf93d22962f4752f3646cd9 | workflow固定 |
-| Windows Runner | windows-2025，平台提供满足固定Action要求的runner/Node运行时 | 2026-10-17实际Actions构建/127单元/100集成/publish通过，本机Node不是必装依赖 |
+| Windows Runner | windows-2025，平台提供满足固定Action要求的runner/Node运行时 | 2026-10-18实际Actions39109350478构建/130单元/106集成/publish通过，本机Node不是必装依赖 |
 
 2026-10-17已只读核对三个官方Release及Git远程标签，完整SHA与workflow一致；官方windows-2025清单仍在更新，实际Actions已成功执行。依据为[当前workflow](../.github/workflows/ci.yml)、[官方Runner清单](https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md)和[本轮接入记录](GITHUB-READINESS-2026-10-17.md)。这些CI依赖不捆绑到客户机应用包。
 
@@ -108,7 +116,9 @@ CursorTouch/Windows-MCP、WinProbe、Node.js、uv和SSH未作为此次下载MCP�
 
 - 已完成：既有工具环境/7读取方法及客户机临时接入；最新Release、127单元/100模拟集成、真实App有限配置与完整副本应用/恢复、最新包客户机十六项及清理，见[FULL17](V02-FULL-TEST-RESULTS-2026-10-17.md)。PowerShell7.6.6只做部署/版本验证，不把它计作App运行依赖。
 - GitHub已验证：公开源码导入、真实Actions构建/127单元/100模拟集成及CI产物，私密安全渠道开关/入口与维护者Daniel Waltz确认，见[结果](GITHUB-READINESS-2026-10-17.md)。
-- 未执行：GitHub Release、CI产物客户机、快照、其他MCP方法及全新OS；不保证其他版本/拓扑/数值兼容。
-- 下一步：后续代码/文档提交继续核实对应CI；正式发布按具体资产授权，不重建已删除副本，系统安装和真实VM仍遵守授权规则。
+- 新增已完成：e27543f CI130/106及同Runtime13原包客户机严格23/23，原三项全通过；[CPU18](CPU-FIX-ACCEPTANCE-2026-10-18.md)保存来源、包哈希、清理及有限范围。未新增依赖或系统安装，旧失败和许可证据保留。
+- 发布已完成：v0.2.0-alpha.1按用户授权公开预发布，专用Actions39113269967成功，tag及三个资产大小/SHA回读通过；复用原CI字节，不新增依赖或安装。
+- 未执行：快照、其他MCP方法、Windows11客户机及全新OS；不保证其他版本/拓扑/数值兼容。
+- 下一步：本次上传已完成，后续按维护任务处理；不为回写文档触发新CI，不重建已删除副本，系统安装和真实VM仍遵守授权规则。
 - v0.1已有源码/本地预览包为0.1.0-alpha.2，来自干净提交ab177a7，BUILD-INFO.json记录SDK10.0.401与Runtime10.0.12；程序集与本机实际导出版本核对通过，ZIP附SHA256。此次不升级依赖，不代表完成新的在线维护期/漏洞核查。
 - 原alpha.1与2026-10-11完整验证ZIP保留原构建快照；后者已在声明目标测试。alpha.2没有重做真实客户机或全新OS测试，正式发布前仍需完成其余发布条件。

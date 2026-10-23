@@ -69,6 +69,24 @@ public sealed class RestClientTests
         Assert.Equal(0, handler.Count);
     }
 
+    [Theory]
+    [InlineData("ethernet0.address")]
+    [InlineData("ethernet0.generatedAddress")]
+    [InlineData("uuid.bios")]
+    [InlineData("uuid.location")]
+    public async Task IdentityFieldsCannotBeSentAloneOrAlongsideNumericSettings(string key)
+    {
+        using var handler = new Handler(_ => throw new InvalidOperationException("No request expected"));
+        using var client = Client(handler);
+        var api = new WorkstationRestClient(client);
+        var identity = new VmxConfigChange(key, "1", "2", "count");
+        var numeric = new VmxConfigChange("memsize", "6144", "4096", "MiB");
+        await Assert.ThrowsAsync<ArgumentException>(() => api.UpdateAsync("x", [identity], Token));
+        await Assert.ThrowsAsync<ArgumentException>(() => api.UpdateAsync("x", [numeric, identity], Token));
+        await Assert.ThrowsAsync<ArgumentException>(() => api.UpdateAsync("x", [identity, numeric], Token));
+        Assert.Equal(0, handler.Count);
+    }
+
     [Fact]
     public async Task ErrorResponsesNeverEchoVendorBodyOrRetry()
     {

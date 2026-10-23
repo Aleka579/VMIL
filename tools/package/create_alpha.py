@@ -4,7 +4,11 @@ import hashlib
 import json
 import pathlib
 import shutil
+import sys
 import zipfile
+# Resolve the sibling verifier explicitly when launched in Python isolated mode.
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from verify_alpha import validate_product_path
 
 
 def main():
@@ -32,9 +36,9 @@ def main():
         if source.is_file():
             shutil.copy2(source, notice_dir / source.name)
     files = sorted(path for path in published.rglob("*") if path.is_file())
-    forbidden = {".pdb", ".vmx", ".vmdk", ".vmsn", ".vmem", ".vmss", ".iso", ".log", ".trx", ".bak", ".tmp"}
     for path in files:
-        if path.is_symlink() or path.suffix.lower() in forbidden or "DesktopTest" in path.name:
+        validate_product_path(path.relative_to(published).as_posix())
+        if path.is_symlink():
             raise ValueError("Non-product content found in the published directory.")
     manifest_path = published / "PACKAGE-FILES.json"
     if manifest_path.exists():
