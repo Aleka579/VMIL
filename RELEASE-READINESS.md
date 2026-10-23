@@ -1,8 +1,8 @@
 # 发布就绪状态
 
-## 当前v0.3.0-alpha.1候选
+## 当前v0.3.0-alpha.1预发布
 
-2026-10-22，26656db的[真实CI与宿主验收](docs/V03-M13-CI-RESULTS.md)、[最终原包客户机验收](docs/V03-M13-CI-GUEST-ACCEPTANCE.md)均已通过，M13完整4/5，剩余具体发布与服务器回执。旧本地候选保留各自来源；后续见[发布方案](docs/V03-RELEASE-PLAN.md)及[双语发布说明](.github/release-notes/v0.3.0-alpha.1.md)，不把历史v0.2计数当本版通过。
+2026-10-23，已按用户授权公开[v0.3.0-alpha.1预发布](https://github.com/Aleka579/VMIL/releases/tag/v0.3.0-alpha.1)，M13完整5/5。26656db的[真实CI与宿主验收](docs/V03-M13-CI-RESULTS.md)、[最终原包客户机验收](docs/V03-M13-CI-GUEST-ACCEPTANCE.md)及tag/三资产服务器大小与SHA核对均通过，见[实际发布回执](docs/GITHUB-RELEASE-v0.3.0-alpha.1.md)。旧本地候选保留各自来源；[发布方案](docs/V03-RELEASE-PLAN.md)及[双语发布说明](.github/release-notes/v0.3.0-alpha.1.md)保留具体范围，不把历史v0.2计数当本版通过。
 
 | 本版门槛 | 当前状态 |
 | --- | --- |
@@ -13,9 +13,9 @@
 | 新实际GitHub CI | 26656db/Actions39616530060 completed/success；原TRX240/206、Release零警告/错误，来源/版本核对通过 |
 | 最终CI原包目标验收 | Win11 Build26100普通权限宿主14/43；Win10教育版Build18363/x64客户机28/50；413文件及原ZIP测试后完整性通过，最终证据已归档/测试目录已清理 |
 | 全新OS、其他Build/拓扑/联网 | 未验证，不扩大兼容声明 |
-| 本版推送/tag/Release及服务器资产回执 | 源码新分支上传完成；固定原包的v0.3发布器/工作流及三资产已准备，tag/Release未创建，待具体发布确认和执行，旧v0.2不改写 |
+| 本版推送/tag/Release及服务器资产回执 | 已公开预发布421405067，发布Actions39892345315成功；tag固定26656db，三资产大小/SHA与审阅一致，main/旧v0.2保留 |
 
-当前原CI审阅包`artifacts/releases/ci-v03-26656db/VMIdentityLab-0.3.0-alpha.1-win-x64.zip`为65286300字节、413文件/解压147354242字节，SHA256 `b607f1cb61b16c19e2fd788a5dfa3f45f0ef74ca3117bc8d170e9072e73ef779`；是原CI字节副本，未重压缩。SDK10.0.402/两运行时10.0.13及许可/来源/全部SHA核对通过，产品没有开发驱动。M13完整**4/5**；客户机测试记录器的原失败/首个App未知退出码保留，后续独立正常退出探针实际取得0，不伪造原值。发布尚待完成；全新OS等范围不继承。
+已发布原CI包`VMIdentityLab-0.3.0-alpha.1-win-x64.zip`为65286300字节、413文件/解压147354242字节，SHA256 `b607f1cb61b16c19e2fd788a5dfa3f45f0ef74ca3117bc8d170e9072e73ef779`；是原CI字节副本，未重压缩。SDK10.0.402/两运行时10.0.13及许可/来源/全部SHA核对通过，产品没有开发驱动。M13完整**5/5**；客户机测试记录器的原失败/首个App未知退出码保留，后续独立正常退出探针实际取得0，不伪造原值。实际发布及服务器核对已完成；全新OS等范围不继承。
 
 此前3c28a74本地候选65516669字节/SHA942fb17cbf1318e5d3f8ebb0f8858523379ad3ed9c26d4da755a385ad9784af3及bdec910修复候选保留原范围，不覆盖、重标或作为当前CI资产。附加worktree已释放，所有必要原件已迁回主目录且逐文件SHA一致。
 
