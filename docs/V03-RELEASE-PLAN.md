@@ -1,29 +1,35 @@
-# v0.3.0-alpha.1 上传与发布审阅方案
+# v0.3.0-alpha.1 发布审阅方案
 
-本文件仅准备可审阅范围，不构成推送/CI触发/发布授权。2026-10-21最初仅做本地准备；复审后用户要求完成未完成部分，已完成修复/本地重验，新的具体远程内容仍待确认，当前未远程写入。
+2026-10-22更新：公开源码、真实CI、最终原包宿主及客户机验收已通过，M13为4/5；预发布和服务器回执未执行。本方案描述可审阅的具体范围，不自行构成发布授权。
 
-## 源码与远程准备
+## 固定来源和资产
 
-目标仓库Aleka579/VMIL，候选版本0.3.0-alpha.1，预发布，不改旧v0.2tag。当前开发位于codex/v03-m10-20261019，包含内部日志和开发历史，不能直接推该分支历史。固定当前本地源码提交后，准备逐文件SHA256及差异清单。
+- 仓库：Aleka579/VMIL；新tag：`v0.3.0-alpha.1`，Pre-release，`make_latest=false`。
+- 精确tag目标：`26656db690d594bebcf2d69d273bfcd5dfc376bc`，保持产品原来源；发布分支提交不作为产品来源。
+- 原CI：[39616530060](https://github.com/Aleka579/VMIL/actions/runs/39616530060)，产品artifact12354145051；240单元/206模拟集成、Release零警告/错误。
+- 原包：65,286,300字节/413文件，SDK10.0.402、两运行时10.0.13；不重新构建、重压缩或混入开发驱动。
+- 目标验收：Win11 Build26100普通权限14/43；[Win10教育版Build18363/x64客户机28/50](V03-M13-CI-GUEST-ACCEPTANCE.md)，测试后413文件/原ZIP未变。临时目录、凭据已清理；VM保持运行。
 
-拟上传生产源码src/、合成测试tests/、解决方案/构建设置/global.json、正式许可证/去重第三方许可、双语README/指南及经过审阅的功能/兼容/安全/报告文档、正常CI和独立开发工具。补齐文档所引用的六份M08–M13公开模块定义及四份v0.2发布/验收摘要，避免公开模块入口引用未上传文件；它们只含可公开的范围/验收定义或摘要。AGENTS.md、WORK_LOG.md、tasks/PROGRESS.md等内部历史/授权与环境调查、真实证据、artifacts/、local-data/、个人路径/标识/凭据均不上传。源码中的合成输入可保留，但真实VMX/磁盘/快照/备份不纳入。
+| 资产 | 字节 | SHA256 |
+| --- | ---: | --- |
+| VMIdentityLab-0.3.0-alpha.1-win-x64.zip | 65286300 | `b607f1cb61b16c19e2fd788a5dfa3f45f0ef74ca3117bc8d170e9072e73ef779` |
+| VMIdentityLab-0.3.0-alpha.1-win-x64.zip.sha256 | 107 | `857c29b1d977348a503199a9f625fed347c9f21b6b1bb70fb7c9840cd7cc728b` |
+| VMIdentityLab-0.3.0-alpha.1-win-x64.files.sha256 | 41128 | `f1d82dc4257605a1f766f0e66d021de3b56ad7f998472929a5588411c6677de4` |
 
-已只读核实main=e27543f、M09公开分支=676d0ec。拟以676d0ec公开历史创建新的codex/v03-m13-ci-20261021分支和审阅覆盖层提交，只运行CI，main/旧tag/Release不变；本地bdec910只作为已验证产品来源。具体逐文件差异/摘要与私有执行方案准备后再请求确认，不强推或上传内部历史。CI的sourceCommit必须对应新的公开提交，其包与本地候选字节及提交不同。
+三资产已在本地审阅目录保存。逐文件清单保留原CI ZIP条目顺序和CRLF，复现结果与已审阅文本逐字节相同。说明为[中英文发布文案](../.github/release-notes/v0.3.0-alpha.1.md)。
 
-## CI与最终包验收
+## 具体远程操作
 
-保留windows-2025及固定官方Actions，普通contents:read；产品artifact继续VMIdentityLab-win-x64-alpha，开发驱动独立artifact。工作流新增EXE/四DLL提交/版本核对和PACKAGE-FILES.json，不新增v0.3发布触发器。旧publish-v02-alpha1.yml及发布脚本固定旧已验收包，本轮不执行或改作v0.3。
+1. 从公开26656db创建新的`codex/release-v03-alpha1-20261022`分支，只增加新固定发布工作流/脚本、公开验收摘要及更新的发布文档；保留所有生产源码和测试blob，不上传内部Git历史、AGENTS、WORK_LOG、进度日志、真实VM数据或原始证据。
+2. 该分支的push触发新的`publish-v03-alpha1.yml`。沿用windows-2025和固定官方checkout，顶层只读，发布job使用仓库范围的actions:read/contents:write临时令牌；不保存令牌。现有codex分支CI也可能按既有规则运行，但Release固定使用39616530060原包。
+3. `Publish-VerifiedV03Alpha.ps1`重新核对成功CI、来源、artifact未过期、大小/SHA、BUILD-INFO、运行时及413条摘要。目标tag或Release已存在时停止，不覆盖。
+4. 创建新草稿，上传并核对三份服务器资产大小/digest后才公开为Pre-release；回读tag精确目标和发布状态，保留回执。
+5. 发布后仅同步公开文档的实际状态和脱敏回执，不更改发布脚本/说明触发路径或产品原包；最后更新本地日志/进度并提交。
 
-授权运行CI后核对job、TRX、包内Runtime10.0.13、System.Management/System.CodeDom10.0.13、BUILD-INFO及清单，固定原始下载ZIP的SHA256/大小。将原包直接用于普通权限目标验收，开发驱动另外准备，不把驱动加进Release产品ZIP；原ZIP不重打包。
+不修改公开main、旧tag、旧v0.2 Release或本机VM；该范围不含新的配置写入/电源/副本测试。源代码归属MIT / Daniel Waltz，私密安全渠道保持原确认。
 
-在授权的具体目标核对默认14/显式17项、来源/版本、双语五页、诊断导出/拒绝覆盖、身份计划禁用范围、私有三阶段合成输入/脱敏导出。M11/M12旧实机往返保留原范围；是否需要新副本写入复验、目标电源操作及用户输入凭据在具体验收方案中单独说明，不沿用已结束授权。全新OS/其他Build/联网未做则继续明确未验证。
+## 失败与恢复
 
-## Release资产与发布
+本地脚本只静态解析，不携带实际令牌或执行远程请求。发布器复用已成功的v0.2实现，新版本常量/摘要及原ZIP顺序已离线核对；静态检查不冒充实际发布通过。
 
-待最终CI及目标验收通过后准备三资产：
-
-- VMIdentityLab-0.3.0-alpha.1-win-x64.zip：已验收的原CI字节。
-- 同名.zip.sha256：该原ZIP摘要。
-- VMIdentityLab-0.3.0-alpha.1-win-x64.files.sha256：原ZIP每文件摘要；包内已有PACKAGE-FILES.json。
-
-说明草稿见[双语发布文案](../.github/release-notes/v0.3.0-alpha.1.md)，不把本地候选哈希填成最终CI哈希。补齐公开来源、run/artifact、Runtime、目标验收及明确限制后，向用户请求针对确切提交、tag、资产和说明的最终发布授权。获授权后创建新预发布并回读tag目标、三个资产大小/SHA，保存回执；失败保留证据，不覆盖旧tag或假报完成。
+上传失败则保留草稿和回执，停止后续公开动作；出现未知结果先读取实际状态，不重放发布或强移tag。公开后的撤回、删除或更换资产须按新的具体问题处理，不能覆盖原包来伪装成功。全新OS、其他Build/VMware版本/拓扑及联网未验证，身份准入保持原有限范围。

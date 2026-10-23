@@ -6,11 +6,11 @@ VMware Workstation 虚拟化特征分析、兼容性诊断与配置管理工具�
 
 ## 当前开发
 
-当前源码为 **0.3.0-alpha.1 本地候选**，正在完成[M13复审修复与交付](docs/V03-M13-CLOSURE.md)，本版尚未推送或发布。[此前本地准备](docs/V03-M13-LOCAL-READINESS.md)保留原包来源；本轮修复后240单元/206模拟集成、资源/三阶段夹具77、原包CLI/PNG14及正常双语GUI43通过，新CI/最终CI原包目标验收仍待完成。已公开的 **0.2.0-alpha.1** 保持原内容。该[预发布](https://github.com/Aleka579/VMIL/releases/tag/v0.2.0-alpha.1)来源e27543f，[GitHub Actions](https://github.com/Aleka579/VMIL/actions/runs/39109350478)通过130单元/106模拟集成，原CI包客户机23/23，见[CPU修复及验收](docs/CPU-FIX-ACCEPTANCE-2026-10-18.md)与[发布记录](docs/GITHUB-RELEASE-v0.2.0-alpha.1.md)。旧37/37和配置数值范围不代表当前v0.3已发布。
+当前源码为 **0.3.0-alpha.1 候选**，公开来源[26656db](https://github.com/Aleka579/VMIL/tree/codex/v03-m13-ci-20261021)的[真实CI](https://github.com/Aleka579/VMIL/actions/runs/39616530060)通过240单元/206模拟集成，Release零警告/错误。确切原CI包通过Win11 Build26100普通权限宿主14项CLI/PNG和43项双语GUI，以及[Win10教育版Build18363/x64客户机28/50项](docs/V03-M13-CI-GUEST-ACCEPTANCE.md)；413文件/原ZIP测试后不变，临时目录和凭据已清理。[M13](tasks/modules/M13-v03-delivery.md)当前4/5，剩余预发布及服务器回执，v0.3尚未发布Release。旧[0.2.0-alpha.1](https://github.com/Aleka579/VMIL/releases/tag/v0.2.0-alpha.1)保留原范围；全新OS、其他Build/拓扑及联网不因本次验收扩大声明。
 
 v0.3 的[完整计划](docs/V03-PLAN.md)与[M08 静态可行性调研](docs/V03-M08-FEASIBILITY.md)已完成；[M09 只读身份分析](docs/V03-M09-RESULTS.md)功能及声明环境补充验收完成：普通权限CLI默认14项/显式17项、双语GUI、[实际CI](https://github.com/Aleka579/VMIL/actions/runs/39196591655)140单元/113模拟集成、新原包宿主9/9和现有Win10客户机28/28通过。[验收记录](docs/V03-M09-CI-GUEST-ACCEPTANCE.md)分别保留首次PNG失败、局部修复、最终原包与清理。可选UUID/MAC/BIOS序列号默认不读取，选择后仍仅输出脱敏结果，报告保持1.0。M09尚未发布，已发布e27543f包不包含该功能；全新OS未验证，当时没有新增身份写入。
 
-[M10 实验计划与预览](docs/V03-M10-RESULTS.md)已在独立worktree完成5/5及本机合成验收：Release零警告/错误、164单元/115模拟集成、普通权限双语GUI20项通过。配置页可审阅MAC唯一性、UUID复制生命周期的意图、风险、恢复和准入缺口，导出脱敏计划JSON；候选不可执行，固定标记“计划未执行”，内容变化清除旧审阅。M10尚未推送或发布，不在e27543f资产中；本模块客户机/远程CI未测试。
+[M10 实验计划与预览](docs/V03-M10-RESULTS.md)原阶段完成5/5及本机合成验收：Release零警告/错误、164单元/115模拟集成、普通权限双语GUI20项通过。配置页可审阅MAC唯一性、UUID复制生命周期的意图、风险、恢复和准入缺口，导出脱敏计划JSON；候选不可执行，固定标记“计划未执行”，内容变化清除旧审阅。现已随26656db公开源码纳入新CI，仍不在e27543f旧资产中；原阶段未执行客户机或远程CI的记录保持其历史含义。
 
 [M11实际App验收与有限准入](docs/V03-M11-APP-ACCEPTANCE.md)完成5/5：已有静态MAC/BIOS UUID各经App应用、退出重开历史、客户机核对、受控恢复和原值核对，客户机75/75、收据36/36通过。默认策略仅允许Workstation17.5.2.23775571/hardware19、已有有效两标识及单个静态hostonly且启动断开的网卡，一次一个字段；仍须可靠关机、明确确认、备份、intent和独立复核。该轮199单元/192集成、正常App双语确认8/8通过，副本删除、原VM恢复挂起；M12进展见下方，无新远程CI或Release。
 
@@ -54,9 +54,9 @@ dotnet publish src/VMIdentityLab.App/VMIdentityLab.App.csproj -c Release -r win-
 - [完整计划](PLAN.md)：原 v0.1/v0.2 路线；[v0.3 计划](docs/V03-PLAN.md)与[M08 结论](docs/V03-M08-FEASIBILITY.md)单列。
 - [模块开发顺序](docs/MODULES.md)：既有 M00–M07 及规划中 M08–M13 的职责、依赖与验收归属。
 - [Codex 总控指令](CODEX_START.md)：复制到新的开发任务时使用。
-- [阶段验收索引](tasks/PROGRESS.md)：37 条验收与证据入口。
-- [项目工作日志](WORK_LOG.md)：实际状态和本轮文件生成记录。
-- [项目指令](AGENTS.md)：恢复工作、测试、隐私和授权规则。
+- [历史验收索引](tasks/PROGRESS.md)：早期37条验收与证据入口；本版状态见上方M13。
+- [公开交接摘要](WORK_LOG.md)：早期脱敏历史摘要，当前验收见本版结果文档。
+- [公共协作指引](AGENTS.md)：已公开的脱敏指引；本机内部日志和授权记录不随发布上传。
 - [发布就绪表](RELEASE-READINESS.md)：构建、测试和发布状态。
 
 ## 版本路线
