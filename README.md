@@ -4,7 +4,7 @@
 
 Windows 虚拟化特征分析、VMware Workstation 配置管理与诊断报告工具。提供简体中文和英文界面，默认普通用户权限、本地处理、脱敏导出，无遥测。
 
-当前源码版本 **1.0.0**。正式包、真实 CI 和验收进度见[发布记录](docs/V1-RELEASE.md)。[历史 v0.3 预发布](https://github.com/Aleka579/VMIL/releases/tag/v0.3.0-alpha.1)及其资产保持原样。
+**v1.0.0 已于2026-10-29正式发布，并设为Latest**：[下载](https://github.com/Aleka579/VMIL/releases/tag/v1.0.0)。主线CI通过240单元/206模拟集成；新原包在Win11客户机普通权限通过28项CLI/PNG及50项正常双语App验收。版本、来源、SHA和实际发布回执见[本版记录](docs/V1-RELEASE.md)。[历史v0.3预发布](https://github.com/Aleka579/VMIL/releases/tag/v0.3.0-alpha.1)及其资产保持原样。
 
 ## 主要功能
 

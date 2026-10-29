@@ -1,6 +1,6 @@
 # 架构设计
 
-状态：既有M00–M07在四层实现，v0.2有限范围验收并预发布；v0.3的M08/M09、M10及M11有限身份事务已完成各自验收。[M12](V03-M12-REAL-ACCEPTANCE.md)有限范围验收5/5，原VM恢复挂起、副本及临时会话已清理，[M13本地准备](V03-M13-LOCAL-READINESS.md)完成，源码0.3.0-alpha.1、完整交付2/5，新CI/最终原包目标验收/发布未执行。沿用四个源码项目，状态见[PROGRESS.md](../tasks/PROGRESS.md)，需求见[REQUIREMENTS.md](REQUIREMENTS.md)。
+当前源码1.0.0，沿用四层工程与既有功能，更新版本资源及.NET10.0.14维护补丁，不改变配置事务逻辑、准入或报告schema。[V1发布记录](V1-RELEASE.md)记录本版CI、目标验收及实际发布；[v0.3发布回执](GITHUB-RELEASE-v0.3.0-alpha.1.md)确认原M13完整5/5，M08–M12历史验收保留原范围。需求见[REQUIREMENTS.md](REQUIREMENTS.md)，历史模块索引见[PROGRESS.md](../tasks/PROGRESS.md)。
 
 ## 分层
 

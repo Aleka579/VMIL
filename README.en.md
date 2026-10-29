@@ -4,7 +4,7 @@
 
 Local Windows virtualization diagnostics, VMware Workstation configuration management, report comparison and three-stage identity validation. Chinese and English UI, ordinary-user operation, redacted exports and no telemetry.
 
-Current source: **1.0.0**. Exact CI, artifact acceptance and publication status are recorded in the [release record](docs/V1-RELEASE.md). Earlier [v0.3 prerelease assets](https://github.com/Aleka579/VMIL/releases/tag/v0.3.0-alpha.1) remain unchanged.
+**v1.0.0 was published as the stable Latest release on2026-10-29**: [download](https://github.com/Aleka579/VMIL/releases/tag/v1.0.0). Main CI passed240 unit/206 synthetic integration tests. The exact new artifact passed28 CLI/PNG and50 bilingual normal-App checks on an ordinary-user Win11 guest. Source, hashes and actual publication receipts are in the [release record](docs/V1-RELEASE.md). Earlier [v0.3 prerelease assets](https://github.com/Aleka579/VMIL/releases/tag/v0.3.0-alpha.1) remain unchanged.
 
 ## Features
 

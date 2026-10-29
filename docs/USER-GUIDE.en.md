@@ -1,6 +1,6 @@
-# User guide — v0.3.0-alpha.1 local candidate
+# User guide — v1.0.0
 
-This version has not been pushed or published. The existing v0.2.0-alpha.1 Release retains its contents. `BUILD-INFO.json` identifies each package; [readiness](../RELEASE-READINESS.md) separates local, CI and target evidence. [简体中文](USER-GUIDE.md).
+Current source version:1.0.0. `BUILD-INFO.json` identifies each package; the [release record](V1-RELEASE.md) separates main CI, exact-artifact acceptance and publication. Earlier v0.2/v0.3 prereleases retain their original contents and evidence scope. [简体中文](USER-GUIDE.md).
 
 ## Run and inspect
 
