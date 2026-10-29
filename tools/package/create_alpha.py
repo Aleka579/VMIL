@@ -1,4 +1,4 @@
-"""Create a local alpha ZIP from a published app with verified build metadata. No deployment."""
+"""Create a local stable or alpha ZIP from verified build metadata. No deployment."""
 import argparse
 import hashlib
 import json
@@ -8,7 +8,7 @@ import sys
 import zipfile
 # Resolve the sibling verifier explicitly when launched in Python isolated mode.
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from verify_alpha import validate_product_path
+from verify_alpha import valid_version, validate_product_path
 
 
 def main():
@@ -19,8 +19,8 @@ def main():
     root = pathlib.Path(__file__).resolve().parents[2]
     published = args.directory.resolve()
     info = json.loads((published / "BUILD-INFO.json").read_text(encoding="utf-8-sig"))
-    if "-alpha." not in info["version"] or info.get("sourceState") != "clean":
-        raise ValueError("A clean alpha build is required.")
+    if not valid_version(info["version"]) or info.get("sourceState") != "clean":
+        raise ValueError("A clean stable or alpha build is required.")
     if len(info["sourceCommit"]) != 40 or any(c not in "0123456789abcdef" for c in info["sourceCommit"]):
         raise ValueError("Invalid build source identity.")
     if args.output.exists() or args.output.with_suffix(args.output.suffix + ".sha256").exists():

@@ -64,9 +64,16 @@ class AlphaTests(unittest.TestCase):
         self.info["sourceState"] = "dirty"
         with self.assertRaises(ValueError): self.create()
 
-    def test_non_alpha_rejected(self):
-        self.info["version"] = "0.3.0"
-        with self.assertRaises(ValueError): self.create()
+    def test_stable_round_trip(self):
+        self.info["version"] = "1.0.0"
+        self.create()
+        self.assertEqual("1.0.0", verify_alpha.verify(self.output, "1.0.0")["version"])
+
+    def test_invalid_version_rejected(self):
+        for version in ("1.0", "01.0.0", "1.0.0-alpha.01", "1.0.0-unknown", "1.0.0+unknown", None):
+            with self.subTest(version=version):
+                self.info["version"] = version
+                with self.assertRaises(ValueError): self.create()
 
     def test_invalid_source_rejected(self):
         self.info["sourceCommit"] = "unknown"

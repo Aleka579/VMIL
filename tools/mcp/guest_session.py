@@ -36,7 +36,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--vmrun", required=True)
     parser.add_argument("--vmx", required=True)
-    parser.add_argument("--user", required=True)
+    parser.add_argument("--user", default="", help="Optional account hint; enter the account in the local credential dialog.")
+    parser.add_argument("--prompt-vm-password", action="store_true",
+                        help="Prompt locally for the encrypted VM password before guest credentials.")
     parser.add_argument("--evidence", type=pathlib.Path, required=True)
     args = parser.parse_args()
     commands, results = args.evidence / "commands", args.evidence / "results"
@@ -44,10 +46,20 @@ def main():
     results.mkdir(parents=True, exist_ok=True)
     state = args.evidence / "session.json"
     password = None
+    vm_password = None
     try:
-        save(state, {"status": "awaiting_local_credentials", "time": now()})
         flags = (win32cred.CREDUI_FLAGS_GENERIC_CREDENTIALS | win32cred.CREDUI_FLAGS_ALWAYS_SHOW_UI
                  | win32cred.CREDUI_FLAGS_DO_NOT_PERSIST)
+        if args.prompt_vm_password:
+            save(state, {"status": "awaiting_vm_credentials", "time": now()})
+            _, vm_password, _ = win32cred.CredUIPromptForCredentials(
+                "VMIdentityLabEncryptedVmTest", UserName="VMware", Save=False, Flags=flags,
+                UiInfo={"CaptionText": "VM Identity Lab 虚拟机加密密码",
+                        "MessageText": "请输入所选虚拟机的加密密码（不是Windows登录密码），仅用于本轮测试，不保存。"})
+            if not vm_password:
+                save(state, {"status": "blocked", "reason": "empty_vm_password", "time": now()})
+                return 1
+        save(state, {"status": "awaiting_local_credentials", "time": now()})
         user, password, _ = win32cred.CredUIPromptForCredentials(
             "VMIdentityLabGuestTest", UserName=args.user, Save=False, Flags=flags,
             UiInfo={"CaptionText": "VM Identity Lab 客户机测试",
@@ -58,17 +70,26 @@ def main():
 
         def call(operation, arguments):
             started = time.monotonic()
-            command = [args.vmrun, "-T", "ws", "-gu", user, "-gp", password,
-                       OPERATIONS[operation], args.vmx, *arguments]
+            command = [args.vmrun, "-T", "ws"]
+            if vm_password is not None:
+                command.extend(["-vp", vm_password])
+            command.extend(["-gu", user, "-gp", password,
+                            OPERATIONS[operation], args.vmx, *arguments])
+
+            def redact(value):
+                for secret in sorted(filter(None, (password, vm_password)), key=len, reverse=True):
+                    value = value.replace(secret, "[credential]")
+                return value
+
             try:
                 process = subprocess.run(command, capture_output=True, stdin=subprocess.DEVNULL,
                                          timeout=45, creationflags=subprocess.CREATE_NO_WINDOW)
-                output = process.stdout.decode("mbcs", errors="replace").replace(password, "[credential]")
+                output = redact(process.stdout.decode("mbcs", errors="replace"))
                 if operation == "processes" and process.returncode == 0:
                     output = "\n".join(line for line in output.splitlines() if "VMIdentityLab.App.exe" in line)
                 return {"exitCode": process.returncode,
                         "stdout": output,
-                        "stderr": process.stderr.decode("mbcs", errors="replace").replace(password, "[credential]"),
+                        "stderr": redact(process.stderr.decode("mbcs", errors="replace")),
                         "seconds": round(time.monotonic() - started, 3), "time": now()}
             except subprocess.TimeoutExpired:
                 return {"exitCode": None, "error": "timeout", "seconds": 45, "time": now()}
@@ -122,6 +143,7 @@ def main():
         return 1
     finally:
         password = None
+        vm_password = None
 
 
 if __name__ == "__main__":

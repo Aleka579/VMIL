@@ -7,7 +7,7 @@
     <sys:String x:Key="Nav.Comparison">Comparison</sys:String>
     <sys:String x:Key="Nav.Reports">Reports</sys:String>
     <sys:String x:Key="App.Subtitle">VMware environment diagnostics</sys:String>
-    <sys:String x:Key="State.ReadOnly">v0.3 alpha · Identity validation</sys:String>
+    <sys:String x:Key="State.ReadOnly">v1.0 · Identity validation</sys:String>
     <sys:String x:Key="Config.Title">Configuration candidates · Change preview</sys:String>
     <sys:String x:Key="Config.Memory">Memory (MiB)</sys:String>
     <sys:String x:Key="Config.Cpu">vCPU count</sys:String>

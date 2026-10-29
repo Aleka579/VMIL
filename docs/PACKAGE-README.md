@@ -1,6 +1,6 @@
-# VM Identity Lab — 0.3.0-alpha.1
+# VM Identity Lab — 1.0.0
 
-Windows x64 本地诊断、VMware 配置管理与三阶段身份验证预览版。准确来源、SDK及运行时见 `BUILD-INFO.json`，文件哈希见 `PACKAGE-FILES.json`。`distribution=local-candidate` 表示本地候选；实际 CI、客户机及发布状态在源码的 `RELEASE-READINESS.md` 分别记录。
+Windows x64 本地诊断、VMware 配置管理与三阶段身份验证工具。准确来源、SDK及运行时见 `BUILD-INFO.json`，文件哈希见 `PACKAGE-FILES.json`。正式发布采用已验收的原CI ZIP；实际CI、客户机及发布回执在源码的 `docs/V1-RELEASE.md` 分别记录。
 
 ## 启动与检测
 
@@ -31,13 +31,13 @@ Windows x64 本地诊断、VMware 配置管理与三阶段身份验证预览版�
 
 ## 验证范围与许可
 
-M11/M12 原模块包曾在现有 Windows10 Education Build18363 x64 独立副本完成实际应用/恢复及三阶段验证；这不代表本包、其他构建、全新系统或联网已经验证。本包以独立 M13 记录为准，官方支持与项目兼容实测分列。
+M11/M12 原模块包曾在现有 Windows10 Education Build18363 x64 独立副本完成实际应用/恢复及三阶段验证；这不代表本包、其他构建、全新系统或联网已经验证。本包以独立v1.0记录为准，官方支持与项目兼容实测分列。
 
 原创 MIT，Copyright (c) 2026 Daniel Waltz；保留 `THIRD-PARTY-NOTICES.md`、`third-party/`。不含 SDK、VMware、Windows 镜像、真实 VM、个人报告或测试工具。无遥测或自动上传。安全问题通过 [GitHub 私密报告](https://github.com/Aleka579/VMIL/security/advisories/new)交由 Daniel Waltz 处理，不在公开 Issue 提交敏感材料。
 
 ## English
 
-This Windows x64 alpha offers local diagnostics, opt-in redacted identity analysis, VMX inspection, finite official-API changes, backup/history/parameter restoration and three-stage validation. Run the complete self-contained folder as an ordinary user; no SDK, system .NET or Python is required. Check `BUILD-INFO.json` for source/runtime/distribution and `PACKAGE-FILES.json` for hashes. Local candidate, CI, guest and publication evidence are separate.
+This Windows x64 release offers local diagnostics, opt-in redacted identity analysis, VMX inspection, finite official-API changes, backup/history/parameter restoration and three-stage validation. Run the complete self-contained folder as an ordinary user; no SDK, system .NET or Python is required. Check `BUILD-INFO.json` for source/runtime/distribution and `PACKAGE-FILES.json` for hashes. Exact CI, guest and publication evidence are recorded separately in `docs/V1-RELEASE.md` in the source repository.
 
 Numeric writes retain the exact 17.5.2.23775571/hardware19/two-cores-per-socket scope: 4096↔6144 MiB and 2↔4 vCPU. Identity writes admit one existing MAC or BIOS UUID at a time only on that build/hardware, with both valid identities and one static host-only NIC disconnected at startup. Other builds, automatic/multiple/connected NICs, absent keys, generated/copied identities and multi-field restoration are not admitted. A fresh preview, explicit confirmation, reliable power-off, verified backup, durable intent and API readback are required. The App does not control power or replace VMX files directly. Backups do not restore disks, snapshots, NVRAM or entire machines; preserve unresolved records and do not blindly retry. The App lease is not a global VMware lock.
 
