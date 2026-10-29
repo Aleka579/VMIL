@@ -1,0 +1,34 @@
+name: Publish verified v1.0.0
+
+on:
+  push:
+    branches: ['codex/release-v1-20261029']
+    paths:
+      - '.github/workflows/publish-v1.yml'
+      - 'tools/release/Publish-VerifiedV1.ps1'
+      - '.github/release-notes/v1.0.0.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-v1.0.0
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'Aleka579/VMIL' && github.ref == 'refs/heads/codex/release-v1-20261029'
+    runs-on: windows-2025
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify original CI artifact, upload assets, and publish stable release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./tools/release/Publish-VerifiedV1.ps1

@@ -1,6 +1,6 @@
-# 使用指南 — v0.3.0-alpha.1 本地候选
+# 使用指南 — v1.0.0
 
-当前源码版本0.3.0-alpha.1尚未上传或发布。已公开的[v0.2.0-alpha.1](https://github.com/Aleka579/VMIL/releases/tag/v0.2.0-alpha.1)保持原内容。包身份见BUILD-INFO.json，[发布就绪表](../RELEASE-READINESS.md)区分本地、CI和目标环境验证。[English guide](USER-GUIDE.en.md)。
+当前源码版本1.0.0，准确包身份见BUILD-INFO.json；[本版记录](V1-RELEASE.md)分别记录主线CI、最终原包验收和发布状态。旧v0.2/v0.3预发布及其验收范围保持原样。[English guide](USER-GUIDE.en.md)。
 
 ## 启动和检测
 
