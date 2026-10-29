@@ -1,10 +1,15 @@
-"""Verify an alpha ZIP without executing or extracting its contents."""
+"""Verify a stable or alpha product ZIP without executing or extracting its contents."""
 import argparse
 import hashlib
 import json
 import pathlib
 import re
 import zipfile
+
+
+def valid_version(value):
+    number = r"(?:0|[1-9]\d*)"
+    return isinstance(value, str) and re.fullmatch(rf"{number}\.{number}\.{number}(?:-alpha\.{number})?", value) is not None
 
 
 def validate_product_path(name):
@@ -44,7 +49,7 @@ def verify(package, expected_version=None, expected_source=None):
         if not required.issubset(manifest):
             raise ValueError("Required product or license file missing.")
         info = json.loads(archive.read("BUILD-INFO.json").decode("utf-8-sig"))
-        if (not re.fullmatch(r"\d+\.\d+\.\d+-alpha\.\d+", info["version"])
+        if (not valid_version(info["version"])
                 or not re.fullmatch("[a-f0-9]{40}", info["sourceCommit"])
                 or info.get("sourceState") != "clean" or info.get("selfContained") is not True
                 or info.get("runtimeIdentifier") != "win-x64"):

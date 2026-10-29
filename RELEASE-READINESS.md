@@ -1,5 +1,16 @@
 # 发布就绪状态
 
+## 当前v1.0.0正式版准备
+
+用户已要求发布v1.0，源码统一1.0.0，自包含运行时与采集依赖10.0.14，现有功能/报告schema/有限配置政策保持。实际范围及完整回执入口为[V1发布记录](docs/V1-RELEASE.md)。
+
+| 门槛 | 实际状态 |
+| --- | --- |
+| 本地Release / 单元 / 模拟集成 | 零警告/错误，240/240及206/206，失败/跳过0 |
+| 打包 / 凭据模拟 / 官方许可核对 | 15/15、8/8、10.0.14许可/两包MIT及共享声明核对通过 |
+| 主线CI / 最终原包 / 客户机 | 待执行；旧Alpha结果不能替代 |
+| 正式tag / 三资产 / Release/latest | 待完成；旧tag及预发布资产不变 |
+
 ## 当前v0.3.0-alpha.1预发布
 
 2026-10-23，已按用户授权公开[v0.3.0-alpha.1预发布](https://github.com/Aleka579/VMIL/releases/tag/v0.3.0-alpha.1)，M13完整5/5。26656db的[真实CI与宿主验收](docs/V03-M13-CI-RESULTS.md)、[最终原包客户机验收](docs/V03-M13-CI-GUEST-ACCEPTANCE.md)及tag/三资产服务器大小与SHA核对均通过，见[实际发布回执](docs/GITHUB-RELEASE-v0.3.0-alpha.1.md)。旧本地候选保留各自来源；[发布方案](docs/V03-RELEASE-PLAN.md)及[双语发布说明](.github/release-notes/v0.3.0-alpha.1.md)保留具体范围，不把历史v0.2计数当本版通过。

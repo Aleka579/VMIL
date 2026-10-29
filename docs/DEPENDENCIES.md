@@ -1,5 +1,11 @@
 # 依赖与支持版本要求
 
+## 2026-10-29 v1.0.0当前基线
+
+源码版本1.0.0；C#14/.NET10 LTS/WPF和四层工程保持。自包含NETCore/WindowsDesktop与System.Management/传递System.CodeDom精确**10.0.14**，采用微软[2026-10-25正式安全补丁](https://github.com/dotnet/core/blob/main/release-notes/10.0/10.0.14/10.0.14.md)，不采用临期或预览框架。global.json继续10.0.401/latestPatch；本地复用10.0.401，CI实际SDK单独记录。xunit.v3仍4.0.1，解析测试依赖集合未改。
+
+[.NET10支持至2028-11-14](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core)；PowerShell7.6 LTS继续7.6.6，[Python3.14仍bugfix且计划2030-10结束](https://devguide.python.org/versions/)。开发/测试工具不随产品分发；没有系统级安装。本版实际CI、许可和包验证见[V1发布记录](V1-RELEASE.md)。下方日期章节、10.0.12/13依赖表均为历史版本，不能替代当前基线或新包验收。
+
 ## 2026-10-21 M13当前候选更新
 
 当前源码0.3.0-alpha.1，本地准备、尚未推送或发布。[M13维护期复核](V03-M13-LOCAL-READINESS.md)列出本轮官方依据：.NET10 LTS及PowerShell7.6 LTS维护至2028-11-14，Python3.14处于bugfix且计划2030-10结束；xUnit4.0.1/MTP2.4及固定官方Actions保持维护依据。没有新采用临期工具或替换框架。

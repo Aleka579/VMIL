@@ -2,7 +2,11 @@
 
 原创源码采用 [MIT](LICENSE)，Copyright (c) 2026 Daniel Waltz。第三方文件保留自己的版权、许可和声明，原创 LICENSE 不替代它们。
 
-## 当前0.3.0-alpha.1候选
+## 当前1.0.0
+
+本版自包含NETCore/WindowsDesktop、System.Management及传递System.CodeDom均为10.0.14。运行时/WPF官方v10.0.14标签许可已核对；两个官方NuGet包nuspec已更新为10.0.14/MIT，共享第三方声明只在换行上不同，继续保留一份完整正文。没有删除不同组件的版权声明。实际构建和原包验收见[V1记录](docs/V1-RELEASE.md)；SDK、测试工具和VMware不随产品分发。
+
+## 历史0.3.0-alpha.1
 
 M13自包含NETCore/WindowsDesktop、System.Management及传递System.CodeDom均为10.0.13。实际官方NuGet元数据/许可和共享声明的正文核对结果（仅换行差异）见[M13记录](docs/V03-M13-LOCAL-READINESS.md)；随包保留去重后的完整第三方声明及对应组件MIT/nuspec。旧10.0.12表保留历史包身份，不代表新包版本。SDK、xUnit/测试平台、Python/PowerShell/Git、测试驱动和VMware不随产品分发；新包实际依赖由deps/runtimeconfig/BUILD-INFO记录。
 

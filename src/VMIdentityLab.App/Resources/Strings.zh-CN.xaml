@@ -7,7 +7,7 @@
     <sys:String x:Key="Nav.Comparison">报告对比</sys:String>
     <sys:String x:Key="Nav.Reports">报告导出</sys:String>
     <sys:String x:Key="App.Subtitle">VMware 环境诊断</sys:String>
-    <sys:String x:Key="State.ReadOnly">v0.3 alpha · 身份分析与验证</sys:String>
+    <sys:String x:Key="State.ReadOnly">v1.0 · 身份分析与验证</sys:String>
     <sys:String x:Key="Config.Title">配置候选 · 变更预览</sys:String>
     <sys:String x:Key="Config.Memory">内存（MiB）</sys:String>
     <sys:String x:Key="Config.Cpu">vCPU 数量</sys:String>

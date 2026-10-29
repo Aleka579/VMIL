@@ -4,8 +4,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>14.0</LangVersion>
-    <Version>0.3.0-alpha.1</Version>
-    <RuntimeFrameworkVersion Condition="'$(SelfContained)' == 'true'">10.0.13</RuntimeFrameworkVersion>
+    <Version>1.0.0</Version>
+    <RuntimeFrameworkVersion Condition="'$(SelfContained)' == 'true'">10.0.14</RuntimeFrameworkVersion>
     <Deterministic>true</Deterministic>
     <NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
